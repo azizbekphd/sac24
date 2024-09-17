@@ -10,7 +10,8 @@ function VrToggler({children, vr}: {children: ReactNode, vr: boolean}) {
         } else {
             store.getState().session?.end()
         }
-    })
+    }, [vr])
+
     return <XR store={store}>
         {children}
     </XR>
