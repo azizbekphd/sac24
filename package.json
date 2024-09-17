@@ -2,6 +2,7 @@
   "name": "sac24",
   "private": true,
   "version": "0.0.0",
+  "homepage": "https://azizbekphd.github.io/space_apps_challenge_2024/",
   "type": "module",
   "scripts": {
     "dev": "vite",
