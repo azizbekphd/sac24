@@ -1,6 +1,13 @@
 import XRContext from './XRContext';
-import TrajectoriesContext from './TrajectoriesContext';
+import TrajectoriesContext, { type TrajectoriesContextType } from './TrajectoriesContext';
 import FocusContext from './FocusContext';
-import TimeControlsContext from './TimeControllerContext';
+import TimeControlsContext, { type TimeControlsState } from './TimeControllerContext';
 
-export { XRContext, TrajectoriesContext, FocusContext, TimeControlsContext };
+export {
+    XRContext,
+    TrajectoriesContext,
+    type TrajectoriesContextType,
+    FocusContext,
+    TimeControlsContext,
+    type TimeControlsState
+};

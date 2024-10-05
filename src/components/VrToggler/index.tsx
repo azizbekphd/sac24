@@ -1,5 +1,5 @@
-import { createXRStore, XR, XRStore } from "@react-three/xr";
-import { ReactNode, useEffect } from "react";
+import { XR, XRStore } from "@react-three/xr";
+import { ReactNode } from "react";
 
 
 function VrToggler({children, store}: {children: ReactNode, store: XRStore}) {

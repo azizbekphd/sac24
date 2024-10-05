@@ -4,5 +4,6 @@ import mkcert from 'vite-plugin-mkcert'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react(), mkcert()],
+    base: 'https://azizbekphd.github.io/sac24',
+    plugins: [react(), mkcert()],
 })

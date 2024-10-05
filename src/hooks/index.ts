@@ -1,5 +1,5 @@
-import { useOrbit } from './useOrbit'
+import useInterval from './useInterval'
 
 export {
-    useOrbit
+    useInterval
 }
