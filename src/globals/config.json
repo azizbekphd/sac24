@@ -87,10 +87,23 @@
     ],
     "smallBodies": {
         "file": "/data/small_bodies.json",
-        "size": 0.02,
-        "minScale": 1,
+        "size": 0.1,
+        "minScale": 0.5,
         "maxScale": 1,
-        "chunkSize": 10000,
-        "totalChunks": 2
+        "chunkSize": 1,
+        "totalChunks": 1
+    },
+    "supabase": {
+        "url": "https://krywglbrlhpjlqwmupon.supabase.co",
+        "key": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtyeXdnbGJybGhwamxxd211cG9uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjgxNDI0NDgsImV4cCI6MjA0MzcxODQ0OH0.5UDM8rxV3cmeYvnJ7QI-oRJa01YC15X6Ww0YhvOqv1E"
+    },
+    "filters": {
+        "order": "diameter",
+        "ascending": false,
+        "range": [0, 100],
+        "query": "",
+        "group": "all",
+        "kind": "all",
+        "numberedState": "all"
     }
 }

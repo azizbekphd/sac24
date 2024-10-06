@@ -1,18 +1,17 @@
 import { useEffect, useMemo, useState } from 'react'
 import './App.css'
-import { Scene } from './components'
+import { Scene, SideMenu } from './components'
 import { MultipleContextProvider } from './utils'
-import { FocusContext, TrajectoriesContext, TrajectoriesContextType, XRContext } from './contexts'
+import { FiltersContextType, FocusContext, TrajectoriesContext, TrajectoriesContextType, XRContext, Filters, FiltersContext } from './contexts'
 import { createXRStore } from '@react-three/xr'
 import { Focus, TrajectoryUtils } from './types'
 import TimeControlsContext, { type TimeControlsState } from './contexts/TimeControllerContext'
 import { useInterval } from './hooks'
 import config from './globals/config.json'
-import { NasaApi } from './repositories'
+import { nasaApi } from './globals/instances'
 
 
 const xrStore = createXRStore();
-const nasaApi = new NasaApi()
 const tick = 40;
 
 function App() {
@@ -27,6 +26,12 @@ function App() {
         deltaIndex: 0,
         deltaTime: 1,
     })
+    const [filters, setFilters] = useState<FiltersContextType>({
+        filters: config.filters as Filters,
+        setFilters: (_filters: FiltersContextType['filters']) => {
+            setFilters({...filters, filters: _filters})
+        }
+    })
 
     useEffect(() => {
         if (trajectories.planets.length === 0) {
@@ -38,18 +43,19 @@ function App() {
             })
             return
         }
-        const chunks = trajectories.smallBodies.length / config.smallBodies.chunkSize
-        if (chunks < config.smallBodies.totalChunks) {
-            nasaApi.getSmallBodiesFromFile(chunks).then(smallBodies => {
+        return () => {}
+    }, [])
+
+    useEffect(() => {
+        if (trajectories.planets.length > 0) {
+            nasaApi.getSmallBodies(filters.filters).then(smallBodies => {
                 setTrajectories({
                     ...trajectories,
-                    smallBodies: [...trajectories.smallBodies, ...smallBodies]
+                    smallBodies: [...smallBodies]
                 })
             })
-            return
         }
-        return () => {}
-    }, [trajectories])
+    }, [filters, trajectories.planets])
 
     useInterval(() => {
         setTimeControls({
@@ -60,6 +66,7 @@ function App() {
 
     return (<>
         <MultipleContextProvider contexts={[
+            {context: FiltersContext, value: filters},
             {
                 context: TrajectoriesContext,
                 value: trajectories
@@ -71,26 +78,36 @@ function App() {
             {context: FocusContext, value: new Focus()},
             {context: XRContext, value: memoizedXrStore}
         ]}>
-            <p style={{textAlign: 'right'}}>{new Date(timeControls.time).toISOString()}</p>
-            <input type="range"
-                min={-10}
-                max={10}
-                step={1} value={timeControls.deltaIndex}
-                style={{
-                    accentColor: !timeControls.live ? (
-                        timeControls.deltaIndex !== 0 ?
-                            '#0000ff' : '#ccc') : '#00ff00',
-                    width: '100%'
-                }}
-                onChange={(e) => {
-                    const newDelta = config.timeDeltas[parseInt(e.target.value) + 10]
-                    setTimeControls({
-                        ...timeControls,
-                        live: false,
-                        deltaIndex: parseInt(e.target.value),
-                        deltaTime: newDelta.value
-                    })
-                }} />
+            <SideMenu />
+            <div className="time-controls">
+                <p style={{textAlign: 'right', width: 'max-content'}}>{new Date(timeControls.time).toISOString()}</p>
+                <input type="range"
+                    min={-10}
+                    max={10}
+                    step={1} value={timeControls.deltaIndex}
+                    style={{
+                        accentColor: !timeControls.live ? (
+                            timeControls.deltaIndex !== 0 ?
+                                '#0000ff' : '#ccc') : '#00ff00'
+                    }}
+                    onChange={(e) => {
+                        const newDelta = config.timeDeltas[parseInt(e.target.value) + 10]
+                        setTimeControls({
+                            ...timeControls,
+                            live: false,
+                            deltaIndex: parseInt(e.target.value),
+                            deltaTime: newDelta.value
+                        })
+                    }} />
+                <button onClick={() => setTimeControls({
+                    ...timeControls,
+                    time: new Date().getTime(),
+                    live: true,
+                    deltaIndex: 0, deltaTime: 1
+                })} className={`live-button ${timeControls.live ? 'live' : ''}`}>
+                    Live
+                </button>
+            </div>
             <Scene />
         </MultipleContextProvider>
     </>)

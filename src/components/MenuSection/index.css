@@ -1,0 +1,33 @@
+.menu-section {
+    display: flex;
+    flex-direction: column;
+    height: 25px;
+    width: 100%;
+    overflow: hidden;
+    transition: height 0.5s ease-in-out;
+}
+
+.menu-section.open {
+    height: auto;
+}
+
+.menu-section-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.menu-section-title.row {
+    height: 25px;
+    cursor: pointer;
+    margin-bottom: 0.5rem;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: space-between!important;
+}
+
+.menu-section-title > span {
+    display: block;
+    text-align: center;
+    width: 25px;
+    right: 0;
+}

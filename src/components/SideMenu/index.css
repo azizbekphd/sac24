@@ -1,0 +1,44 @@
+.side-menu-wrapper {
+    position: fixed;
+    top: 0;
+    left: -300px;
+    width: 300px;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 10;
+}
+
+.side-menu-wrapper.show {
+    left: 0;
+}
+
+.side-menu {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding: 1rem;
+    box-sizing: border-box;
+    gap: 1rem;
+    height: 100%;
+    overflow: auto;
+}
+
+.side-menu > *:last-child {
+    margin-bottom: 1rem;
+}
+
+.side-menu-toggler {
+    position: absolute;
+    top: 50%;
+    left: 100%;
+    transform: translate(0, -50%);
+    font-size: 1rem;
+    color: black;
+    background-color: white;
+    border: none;
+    cursor: pointer;
+    writing-mode: vertical-lr;
+    width: 2rem;
+    height: 60px;
+}

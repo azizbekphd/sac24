@@ -1,6 +1,6 @@
 import "./index.css"
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls, Stats } from "@react-three/drei";
+import { OrbitControls } from "@react-three/drei";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { IfInSessionMode, XR } from "@react-three/xr";
 import { TrajectoriesContext, XRContext, TimeControlsContext, TrajectoriesContextType } from "../../contexts";
@@ -84,9 +84,8 @@ function Scene() {
                     </IfInSessionMode>}
                     <axesHelper />
                 </XR>
-                <Stats />
             </Canvas>
-            <button onClick={() => {xrStore.enterVR()}} className="enter-vr">Enter VR</button>
+            {/*<button onClick={() => {xrStore.enterVR()}} className="enter-vr">Enter VR</button>*/}
         </>
     );
 }

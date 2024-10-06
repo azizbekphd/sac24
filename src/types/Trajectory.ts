@@ -54,7 +54,7 @@ class Trajectory {
         this.aN = MathUtils.degToRad(aN)                        // ascending node --> convert degrees to radians
         this.period = Sidereal * MILLISECONDS_IN_SIDEREAL_YEAR        // siderial period as a multiple of Earth's orbital period
         this.epochMeanAnomaly = MathUtils.degToRad(mAe)         // mean anomaly at epoch
-        this.diameter = type === TrajectoryType.NEO ? 100000 : diameter
+        this.diameter = isNaN(diameter) ? 0 : diameter
         this.type = type
         this.position = [0,0,0]
         this.color = color ?? (type === TrajectoryType.PHA ? "red" : (type === TrajectoryType.NEO ? "blue" : "grey"))

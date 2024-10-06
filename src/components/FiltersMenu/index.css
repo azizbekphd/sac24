@@ -1,0 +1,25 @@
+.filters {
+    box-sizing: border-box;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+}
+
+.filters .row {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: stretch;
+    align-items: center;
+    font-family: inherit;
+    gap: 0.5rem;
+}
+
+label, select, input {
+    font-size: 0.7rem;
+    font-family: inherit;
+    flex: 1;
+}

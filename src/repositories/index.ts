@@ -1,3 +1,3 @@
-import NasaApi from './NasaApi'
+import NasaSmallBodyQueryApi from './NasaSmallBodyQueryApi'
 
-export { NasaApi }
+export { NasaSmallBodyQueryApi }
