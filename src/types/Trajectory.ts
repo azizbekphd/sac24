@@ -29,6 +29,7 @@ class Trajectory {
         sLR?: number,
         eA?: number
     }
+    kind: string;
 
     constructor(
         id: string,
@@ -43,7 +44,8 @@ class Trajectory {
         diameter: number,
         type: TrajectoryType,
         color?: string,
-        calculateOrbit: boolean = false
+        calculateOrbit: boolean = false,
+        kind: string = ''
     ){
         this.id = id
         this.name = name                                              // name the object
@@ -64,6 +66,7 @@ class Trajectory {
         if (calculateOrbit) {
             this.cache.points = this.points
         }
+        this.kind = kind
     }
 
     /**
@@ -159,7 +162,8 @@ class TrajectoryUtils {
                     object.d,
                     type,
                     object.color,
-                    calculateOrbit
+                    calculateOrbit,
+                    ''
                 );
             });
 

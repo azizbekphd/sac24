@@ -3,6 +3,7 @@ import { Filters, FiltersContext } from '../../contexts';
 import { useDebounce } from '../../hooks';
 import MenuSection from '../MenuSection';
 import './index.css'
+import config from '../../globals/config.json'
 
 const FiltersMenu: React.FC = memo(() => {
     const {filters, setFilters} = useContext(FiltersContext)
@@ -48,6 +49,70 @@ const FiltersMenu: React.FC = memo(() => {
                         <option value="unnumbered">Unnumbered</option>
                     </select>
                 </div>
+            </MenuSection>
+
+            <MenuSection title={`Asteroid class${filters.asteroidClasses.length > 0 ? ' *' : ''}`}>
+                {/* checkboxes */}
+                {config.filters.asteroidClasses.map((classDef, i) => {
+                    const filter = Filters.classesToFilter(classDef, 'asteroids')
+                    return (
+                        <div key={i} className="row">
+                            <input
+                                id={classDef.value}
+                                type="checkbox"
+                                checked={filters.asteroidClasses.includes(filter)}
+                                onChange={(e) => {
+                                    const ac = [...filters.asteroidClasses]
+                                    if (e.target.checked) {
+                                        !ac.includes(filter) && ac.push(filter)
+                                    } else {
+                                        ac.includes(filter) && ac.splice(ac.indexOf(filter), 1)
+                                    }
+                                    setFilters({
+                                        ...filters,
+                                        asteroidClasses: ac
+                                    })
+                                }}
+                            />
+                            <label
+                                className="tooltip-label"
+                                title={classDef.description}
+                                htmlFor={classDef.value}>{classDef.label}</label>
+                        </div>
+                    )
+                })}
+            </MenuSection>
+
+            <MenuSection title={`Comet class${filters.cometClasses.length > 0 ? ' *' : ''}`}>
+                {/* checkboxes */}
+                {config.filters.cometClasses.map((classDef, i) => {
+                    const filter = Filters.classesToFilter(classDef, 'comets')
+                    return (
+                        <div key={i} className="row">
+                            <input
+                                id={classDef.value}
+                                type="checkbox"
+                                checked={filters.cometClasses.includes(filter)}
+                                onChange={(e) => {
+                                    const ac = [...filters.cometClasses]
+                                    if (e.target.checked) {
+                                        !ac.includes(filter) && ac.push(filter)
+                                    } else {
+                                        ac.includes(filter) && ac.splice(ac.indexOf(filter), 1)
+                                    }
+                                    setFilters({
+                                        ...filters,
+                                        cometClasses: ac
+                                    })
+                                }}
+                            />
+                            <label
+                                className="tooltip-label"
+                                title={classDef.description}
+                                htmlFor={classDef.value}>{classDef.label}</label>
+                        </div>
+                    )
+                })}
             </MenuSection>
         </div>
     )

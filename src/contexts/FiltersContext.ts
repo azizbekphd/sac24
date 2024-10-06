@@ -9,6 +9,8 @@ class Filters {
     group: 'all' | 'neo' | 'pha';
     kind: 'all' | 'asteroids' | 'comets';
     numberedState: 'all' | 'numbered' | 'unnumbered';
+    asteroidClasses: string[];
+    cometClasses: string[];
 
     constructor(args: any) {
         this.order = args.order;
@@ -18,6 +20,8 @@ class Filters {
         this.group = args.group;
         this.kind = args.kind;
         this.numberedState = args.numberedState;
+        this.asteroidClasses = args.asteroidClasses;
+        this.cometClasses = args.cometClasses;
     }
 
     static mappings = {
@@ -34,6 +38,14 @@ class Filters {
             'unnumbered': 'u',
         }
     }
+
+    static classesToFilter(classDef: typeof config.filters.asteroidClasses[0], kind: string): string {
+        const kindFilter = `kind.like.${kind === 'comets' ? 'c' : 'a'}%`
+        const params = classDef.params.map((param) => `${param.field}.${param.operator}.${param.value}`)
+        params.push(kindFilter)
+        const filter = params.length > 1 ? `and(${params.join(', ')})` : params[0]
+        return filter
+    }
 }
 
 interface FiltersContextType {
@@ -42,7 +54,7 @@ interface FiltersContextType {
 }
 
 const FiltersContext = createContext<FiltersContextType>({
-    filters: config.filters as Filters,
+    filters: config.filters.default as unknown as Filters,
     setFilters: () => {},
 })
 

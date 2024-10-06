@@ -1,13 +1,14 @@
 .bodies-table {
     width: 100%;
     max-height: 500px;
-    color: black;
+    font-size: 0.8rem;
 }
 
 .bodies-table table {
     width: 100%;
     border-collapse: collapse;
     font-size: 0.8rem;
+    color: black;
 }
 
 .bodies-table table thead tr {
@@ -23,4 +24,8 @@
     padding: 8px;
     text-align: left;
     border: 1px solid #ccc;
+}
+
+.bodies-table .row span {
+    font-size: 0.7rem;
 }

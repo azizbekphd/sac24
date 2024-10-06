@@ -4,6 +4,7 @@ import { Trajectory } from '../../types'
 import config from '../../globals/config.json'
 import { Html } from '@react-three/drei';
 import { ThreeEvent } from '@react-three/fiber';
+import { TrajectoryType } from '../../types/Trajectory';
 
 interface SmallBodyOrbits {
     trajectories: Trajectory[];
@@ -25,6 +26,11 @@ const Orbit: React.FC<SmallBodyOrbits> = memo(({ trajectories, datetime, hovered
             temp.scale.set(scale, scale, scale)
             temp.updateMatrix();
             ref.current.setMatrixAt(i, temp.matrix);
+            if (trajectory.type === TrajectoryType.PHA) {
+                ref.current.setColorAt(i, new THREE.Color('red'))
+            } else if (trajectory.kind.startsWith('c')) {
+                ref.current.setColorAt(i, new THREE.Color('lightblue'))
+            }
         })
         ref.current.instanceMatrix.needsUpdate = true;
     }, [datetime])

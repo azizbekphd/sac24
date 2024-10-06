@@ -6,7 +6,7 @@ import { IfInSessionMode, XR } from "@react-three/xr";
 import { TrajectoriesContext, XRContext, TimeControlsContext, TrajectoriesContextType } from "../../contexts";
 import { PerspectiveCamera } from "three";
 import Orbit from "../Orbit";
-import { SmallBodies } from "..";
+import { SmallBodies, Sun } from "..";
 import config from "../../globals/config.json";
 
 
@@ -18,7 +18,7 @@ enum ViewMode {
 function Scene() {
     const objects = useContext<TrajectoriesContextType>(TrajectoriesContext);
     const xrStore = useContext(XRContext);
-    const timeControls = useContext(TimeControlsContext);
+    const { timeControls } = useContext(TimeControlsContext);
     const normalCamera = new PerspectiveCamera();
     const xrCamera = new PerspectiveCamera();
     const [mode, setMode] = useState<ViewMode>(ViewMode.normal);
@@ -60,11 +60,16 @@ function Scene() {
 
     return (
         <>
-            <Canvas camera={camera} dpr={window.devicePixelRatio} frameloop="demand">
+            <Canvas
+                style={{position: 'fixed', top: 0, left: 0}}
+                camera={camera}
+                dpr={window.devicePixelRatio}
+                frameloop="demand">
                 <XR store={xrStore}>
                     <ambientLight intensity={Math.PI / 2} />
                     <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={0} intensity={Math.PI} />
                     <pointLight position={[-10, -10, -10]} decay={0} intensity={Math.PI} />
+                    <Sun />
                     {objects.planets.map(
                         (obj, i) => <Orbit
                             key={i.toString()}
@@ -82,7 +87,6 @@ function Scene() {
                     {mode === ViewMode.normal && <IfInSessionMode deny={['immersive-ar', 'immersive-vr']} >
                         <OrbitControls enablePan={false} maxZoom={0.5} minZoom={0.5} camera={camera} />
                     </IfInSessionMode>}
-                    <axesHelper />
                 </XR>
             </Canvas>
             {/*<button onClick={() => {xrStore.enterVR()}} className="enter-vr">Enter VR</button>*/}

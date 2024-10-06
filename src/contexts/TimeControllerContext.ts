@@ -7,11 +7,19 @@ interface TimeControlsState {
     deltaTime: number;
 }
 
-const TimeControlsContext = createContext<TimeControlsState>({
-    time: new Date().getTime(),
-    live: true,
-    deltaIndex: 0,
-    deltaTime: 1
+interface TimeControlsContextType {
+    timeControls: TimeControlsState;
+    setTimeControls: (timeControls: TimeControlsState) => void;
+}
+
+const TimeControlsContext = createContext<TimeControlsContextType>({
+    timeControls: {
+        time: new Date().getTime(),
+        live: true,
+        deltaIndex: 0,
+        deltaTime: 1
+    },
+    setTimeControls: () => {},
 });
 
 export default TimeControlsContext;

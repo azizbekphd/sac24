@@ -6,6 +6,7 @@
 .time-controls {
     z-index: 9;
     position: absolute;
+    top: 0;
     left: 50%;
     transform: translate(-50%, 0);
     display: flex;
@@ -18,7 +19,7 @@
 .live-button {
     font-size: 1rem;
     color: black;
-    background-color: white;
+    background-color: grey;
     border: none;
     cursor: pointer;
     height: 2rem;

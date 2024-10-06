@@ -10,8 +10,8 @@ class SmallBody {
     spkid: number;
     name: string;
     full_name: string;
-    neo: string;
-    pha: string;
+    neo: boolean;
+    pha: boolean;
     e: string;       // oE
     w: string;       // aP
     a: string;       // smA
@@ -20,6 +20,7 @@ class SmallBody {
     om: string;      // aN
     per_y: string;   // sidereal
     diameter: string;
+    kind: string;
 
     constructor(args: any[]) {
         args = args.slice(2)
@@ -36,6 +37,7 @@ class SmallBody {
         this.om = args[10];
         this.per_y = args[11];
         this.diameter = args[12];
+        this.kind = args[13];
     }
 
     static fromObject(obj: any): SmallBody {
@@ -44,16 +46,16 @@ class SmallBody {
             obj.spkid, obj.name, obj.full_name,
             obj.neo, obj.pha,
             obj.e, obj.w, obj.a, obj.ma, obj.i, obj.om,
-            obj.per_y, obj.diameter
+            obj.per_y, obj.diameter, obj.kind
         ])
     }
 
     toTrajectory(): Trajectory {
         let _type = TrajectoryType.Other
-        if (this.neo === 'Y') {
-            _type = TrajectoryType.NEO
-        } else if (this.pha === 'Y') {
+        if (this.pha) {
             _type = TrajectoryType.PHA
+        } else if (this.neo) {
+            _type = TrajectoryType.NEO
         }
         return new Trajectory(
             this.spkid.toString(),
@@ -67,6 +69,9 @@ class SmallBody {
             parseFloat(this.per_y),
             parseFloat(this.diameter),
             _type,
+            this.kind.startsWith('c') ? 'lightblue' : 'grey',
+            false,
+            this.kind
         )
     }
 }
@@ -78,7 +83,7 @@ class NasaSmallBodyQueryApi {
         this.client = new SupabaseClient(config.supabase.url, config.supabase.key)
     }
 
-    async getSmallBodies(filters: FiltersContextType['filters']): Promise<Trajectory[]> {
+    async getSmallBodies(filters: FiltersContextType['filters'], attempt: number = 0): Promise<Trajectory[]> {
         let request = this.client.from('bodies').select('*')
         if (filters.query && filters.query !== '') {
             request = request.ilike('name', `%${filters.query}%`)
@@ -92,11 +97,19 @@ class NasaSmallBodyQueryApi {
         if (filters.numberedState && filters.numberedState !== 'all') {
             request = request.ilike('kind', `%${Filters.mappings.numberedState[filters.numberedState]}`)
         }
+        if (filters.asteroidClasses && filters.asteroidClasses.length > 0 ||
+            filters.cometClasses && filters.cometClasses.length > 0) {
+            const ors = [...filters.asteroidClasses, ...filters.cometClasses]
+            request = request.or(ors.join(', '))
+        }
         const { data, error } = await request
             .order(filters.order, {ascending: filters.ascending, nullsFirst: false})
             .range(filters.range[0], filters.range[1])
         if (error) {
             console.log(error)
+            if (attempt < 5) {
+                return await this.getSmallBodies(filters, attempt + 1)
+            }
             return []
         }
         const bodies = data.map((body: any) => SmallBody.fromObject(body))

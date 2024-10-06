@@ -41,7 +41,7 @@
             "value": -7200
         },
         {
-            "label": "0",
+            "label": "Paused",
             "value": 0
         },
         {
@@ -98,12 +98,289 @@
         "key": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtyeXdnbGJybGhwamxxd211cG9uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjgxNDI0NDgsImV4cCI6MjA0MzcxODQ0OH0.5UDM8rxV3cmeYvnJ7QI-oRJa01YC15X6Ww0YhvOqv1E"
     },
     "filters": {
-        "order": "diameter",
-        "ascending": false,
-        "range": [0, 100],
-        "query": "",
-        "group": "all",
-        "kind": "all",
-        "numberedState": "all"
+        "default": {
+            "order": "diameter",
+            "ascending": false,
+            "range": [0, 100],
+            "query": "",
+            "group": "all",
+            "kind": "all",
+            "numberedState": "all",
+            "asteroidClasses": [],
+            "cometClasses": []
+        },
+        "asteroidClasses": [
+            {
+                "label": "Atira",
+                "value": "a_atira",
+                "description": "An asteroid orbit contained entirely within the orbit of the Earth (Q < 0.983 au). Also known as an Interior Earth Object.",
+                "params": [
+                    {
+                        "field": "ad",
+                        "operator": "lt",
+                        "value": 0.983
+                    }
+                ]
+            },
+            {
+                "label": "Aten",
+                "value": "a_aten",
+                "description": "Near-Earth asteroid orbits similar to that of 2062 Aten (a < 1.0 au; Q > 0.983 au).",
+                "params": [
+                    {
+                        "field": "ad",
+                        "operator": "gt",
+                        "value": 0.983
+                    },
+                    {
+                        "field": "a",
+                        "operator": "lt",
+                        "value": 1
+                    }
+                ]
+            },
+            {
+                "label": "Apollo",
+                "value": "a_apollo",
+                "description": "Near-Earth asteroid orbits which cross the Earth's orbit similar to that of 1862 Apollo (a > 1.0 au; q < 1.017 au).",
+                "params": [
+                    {
+                        "field": "a",
+                        "operator": "gt",
+                        "value": 1
+                    },
+                    {
+                        "field": "q",
+                        "operator": "lt",
+                        "value": 1.017
+                    }
+                ]
+            },
+            {
+                "label": "Amor",
+                "value": "a_amor",
+                "description": "Near-Earth asteroid orbits similar to that of 1221 Amor (1.017 au < q < 1.3 au).",
+                "params": [
+                    {
+                        "field": "q",
+                        "operator": "gt",
+                        "value": 1.017
+                    },
+                    {
+                        "field": "q",
+                        "operator": "lt",
+                        "value": 1.3
+                    }
+                ]
+            },
+            {
+                "label": "Mars-crossing Asteroid",
+                "value": "a_mars-crossing",
+                "description": "Asteroids that cross the orbit of Mars constrained by (1.3 au < q < 1.666 au; a < 3.2 au).",
+                "params": [
+                    {
+                        "field": "q",
+                        "operator": "gt",
+                        "value": 1.3
+                    },
+                    {
+                        "field": "q",
+                        "operator": "lt",
+                        "value": 1.666
+                    },
+                    {
+                        "field": "a",
+                        "operator": "lt",
+                        "value": 3.2
+                    }
+                ]
+            },
+            {
+                "label": "Inner Main-belt Asteroid",
+                "value": "a_inner-main-belt",
+                "description": "Asteroids with orbital elements constrained by (a < 2.0 au; q > 1.666 au).",
+                "params": [
+                    {
+                        "field": "a",
+                        "operator": "lt",
+                        "value": 2
+                    },
+                    {
+                        "field": "q",
+                        "operator": "gt",
+                        "value": 1.666
+                    }
+                ]
+            },
+            {
+                "label": "Main-belt Asteroid",
+                "value": "a_main-belt",
+                "description": "Asteroids with orbital elements constrained by (2.0 au < a < 3.2 au; q > 1.666 au).",
+                "params": [
+                    {
+                        "field": "a",
+                        "operator": "gt",
+                        "value": 2
+                    },
+                    {
+                        "field": "a",
+                        "operator": "lt",
+                        "value": 3.2
+                    },
+                    {
+                        "field": "q",
+                        "operator": "gt",
+                        "value": 1.666
+                    }
+                ]
+            },
+            {
+                "label": "Outer Main-belt Asteroid",
+                "value": "a_outer-main-belt",
+                "description": "Asteroids with orbital elements constrained by (3.2 au < a < 4.6 au).",
+                "params": [
+                    {
+                        "field": "a",
+                        "operator": "gt",
+                        "value": 3.2
+                    },
+                    {
+                        "field": "a",
+                        "operator": "lt",
+                        "value": 4.6
+                    }
+                ]
+            },
+            {
+                "label": "Jupiter Trojan",
+                "value": "a_jupiter-trojan",
+                "description": "Asteroids trapped in Jupiter's L4/L5 Lagrange points (4.6 au < a < 5.5 au; e < 0.3).",
+                "params": [
+                    {
+                        "field": "a",
+                        "operator": "gt",
+                        "value": 4.6
+                    },
+                    {
+                        "field": "a",
+                        "operator": "lt",
+                        "value": 5.5
+                    },
+                    {
+                        "field": "e",
+                        "operator": "lt",
+                        "value": 0.3
+                    }
+                ]
+            },
+            {
+                "label": "Centaur",
+                "value": "a_centaur",
+                "description": "Objects with orbits between Jupiter and Neptune (5.5 au < a < 30.1 au).",
+                "params": [
+                    {
+                        "field": "a",
+                        "operator": "gt",
+                        "value": 5.5
+                    },
+                    {
+                        "field": "a",
+                        "operator": "lt",
+                        "value": 30.1
+                    }
+                ]
+            },
+            {
+                "label": "Trans-Neptunian Object",
+                "value": "a_trans-neptunian",
+                "description": "Objects with orbits outside Neptune (a > 30.1 au).",
+                "params": [
+                    {
+                        "field": "a",
+                        "operator": "gt",
+                        "value": 30.1
+                    }
+                ]
+            },
+            {
+                "label": "Parabolic Asteroid",
+                "value": "a_parabolic",
+                "description": "Objects with parabolic orbits (e < 0.3).",
+                "params": [
+                    {
+                        "field": "e",
+                        "operator": "lt",
+                        "value": 0.3
+                    }
+                ]
+            },
+            {
+                "label": "Hyperbolic Asteroid",
+                "value": "a_hyperbolic",
+                "description": "Asteroids on hyperbolic orbits (e > 1.0).",
+                "params": [
+                    {
+                        "field": "e",
+                        "operator": "gt",
+                        "value": 1
+                    }
+                ]
+            }
+        ],
+        "cometClasses": [
+            {
+                "label": "Hyperbolic comet",
+                "value": "c_hyperbolic",
+                "description": "Comets on hyperbolic orbits (e > 1.0).",
+                "params": [
+                    {
+                        "field": "e",
+                        "operator": "gt",
+                        "value": 1
+                    }
+                ]
+            },
+            {
+                "label": "Parabolic comet",
+                "value": "c_parabolic",
+                "description": "Comets on parabolic orbits (e = 1.0).",
+                "params": [
+                    {
+                        "field": "e",
+                        "operator": "eq",
+                        "value": 1
+                    }
+                ]
+            },
+            {
+                "label": "Jupiter-family Comet",
+                "value": "c_jupiter-family",
+                "description": "Jupiter-family comet, classical definition (P < 20 y).",
+                "params": [
+                    {
+                        "field": "per_y",
+                        "operator": "lt",
+                        "value": 20
+                    }
+                ]
+            },
+            {
+                "label": "Halley-type Comet",
+                "value": "c_halley-type",
+                "description": "Halley-type comet, classical definition (20 y < P < 200 y).",
+                "params": [
+                    {
+                        "field": "per_y",
+                        "operator": "gt",
+                        "value": 20
+                    },
+                    {
+                        "field": "per_y",
+                        "operator": "lt",
+                        "value": 200
+                    }
+                ]
+            }
+        ]
     }
 }
