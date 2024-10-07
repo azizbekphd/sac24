@@ -1,12 +1,12 @@
 import "./index.css"
-import { Canvas } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
+import { Canvas, extend } from "@react-three/fiber";
+import { OrbitControls, Stats } from "@react-three/drei";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { IfInSessionMode, XR } from "@react-three/xr";
 import { TrajectoriesContext, XRContext, TimeControlsContext, TrajectoriesContextType } from "../../contexts";
 import { PerspectiveCamera } from "three";
 import Orbit from "../Orbit";
-import { SmallBodies, Sun } from "..";
+import { Skybox, SmallBodies, Sun } from "..";
 import config from "../../globals/config.json";
 
 
@@ -14,6 +14,8 @@ enum ViewMode {
     normal,
     vr
 }
+
+extend({ OrbitControls });
 
 function Scene() {
     const objects = useContext<TrajectoriesContextType>(TrajectoriesContext);
@@ -37,6 +39,16 @@ function Scene() {
                 setMode(ViewMode.normal)
             }
         });
+        const handleResize = () => {
+            normalCamera.aspect = window.innerWidth / window.innerHeight;
+            normalCamera.updateProjectionMatrix();
+            xrCamera.aspect = window.innerWidth / window.innerHeight;
+            xrCamera.updateProjectionMatrix();
+        }
+        window.addEventListener('resize', handleResize)
+        return () => {
+            window.removeEventListener('resize', handleResize)
+        }
     }, [])
 
     useEffect(() => {
@@ -84,10 +96,12 @@ function Scene() {
                         datetime={new Date(timeControls.time)}
                         hovered={hovered}
                         setHovered={setHovered} />)}
-                    {mode === ViewMode.normal && <IfInSessionMode deny={['immersive-ar', 'immersive-vr']} >
-                        <OrbitControls enablePan={false} maxZoom={0.5} minZoom={0.5} camera={camera} />
-                    </IfInSessionMode>}
+                    <IfInSessionMode deny={['immersive-ar', 'immersive-vr']} >
+                        <OrbitControls enablePan={false} minDistance={1} maxDistance={200} camera={camera} />
+                    </IfInSessionMode>
+                    <Stats />
                 </XR>
+                <Skybox />
             </Canvas>
             {/*<button onClick={() => {xrStore.enterVR()}} className="enter-vr">Enter VR</button>*/}
         </>

@@ -1,3 +1,5 @@
+import { DIFF_BETWEEN_J2000_AND_EPOCH, MILLISECONDS_IN_SIDEREAL_YEAR } from "../globals/constants";
+
 class MathUtils {
     static lerp(start: number, end: number, numElements: number): number[] {
         const step = (end - start) / (numElements - 1);
@@ -49,7 +51,8 @@ class MathUtils {
      * @returns {number} The true anomaly.
      */
     static timeToTrueAnomaly(time: number, period: number, M: number): number {
-        return M + 2 * Math.PI * time / period;
+        const millisSinceJ2000 = time - DIFF_BETWEEN_J2000_AND_EPOCH;
+        return M + 2 * Math.PI * millisSinceJ2000 / period;
     }
 }
 

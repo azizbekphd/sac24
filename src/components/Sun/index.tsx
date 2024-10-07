@@ -17,7 +17,7 @@ function ConstantSizeSphere() {
 
   return (
     <mesh ref={ref}>
-      <sphereGeometry args={[0.01, 32, 32]} />
+      <sphereGeometry args={[0.01, 10, 10]} />
       <meshBasicMaterial color={"#FDB813"} />
     </mesh>
   );

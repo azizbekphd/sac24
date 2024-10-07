@@ -1,9 +1,8 @@
 import * as THREE from 'three'
-import React, { memo, useEffect, useRef, useCallback } from 'react'
+import React, { memo, useEffect, useRef, useCallback, useMemo } from 'react'
 import { Trajectory } from '../../types'
 import config from '../../globals/config.json'
-import { Html } from '@react-three/drei';
-import { ThreeEvent } from '@react-three/fiber';
+import { ThreeEvent, useFrame } from '@react-three/fiber';
 import { TrajectoryType } from '../../types/Trajectory';
 
 interface SmallBodyOrbits {
@@ -14,34 +13,61 @@ interface SmallBodyOrbits {
     temp?: THREE.Object3D;
 }
 
-const Orbit: React.FC<SmallBodyOrbits> = memo(({ trajectories, datetime, hovered, setHovered, temp = new THREE.Mesh }) =>{
-    const ref = useRef<THREE.InstancedMesh>(null!)
+const SmallBodies: React.FC<SmallBodyOrbits> = memo(({ trajectories, datetime, hovered, setHovered }) =>{
+    const geometryRef = useRef<THREE.BufferAttribute>(null!)
+    const sizeRef = useRef<THREE.BufferAttribute>(null!)
+    const materialRef = useRef<THREE.BufferAttribute>(null!)
+
+    const calculateColors = useCallback(() => {
+        const colors = new Float32Array(trajectories.map(t => {
+            let colorCode = config.smallBodies.asteroidColor
+            if (t.type === TrajectoryType.PHA) {
+                colorCode = config.smallBodies.phaColor
+            } else if (t.kind.startsWith('c')) {
+                colorCode = config.smallBodies.cometColor
+            }
+            return colorCode
+        }).flat())
+        return colors
+    }, [trajectories])
+
+    const calculateSizes = useCallback(() => {
+        const sizes = new Float32Array(trajectories.map(t => {
+            return Math.max(Math.min(t.diameter / 1000, config.smallBodies.maxSize), config.smallBodies.minSize)
+        }).flat())
+        return sizes
+    }, [trajectories])
+
+    const calculatePositions = useCallback(() => {
+        const positions = new Float32Array(trajectories.map(t => {
+            return t.propagateFromTime(datetime.getTime())
+        }).flat())
+        return positions
+    }, [trajectories, datetime])
 
     useEffect(() => {
-        trajectories.forEach((trajectory, i) => {
-            const position = trajectory.propagateFromTime(datetime.getTime())
-            const diameter = trajectory.diameter
-            const scale = Math.min(Math.min(diameter, config.smallBodies.maxScale), config.smallBodies.minScale)
-            temp.position.set(position[0], position[1], position[2])
-            temp.scale.set(scale, scale, scale)
-            temp.updateMatrix();
-            ref.current.setMatrixAt(i, temp.matrix);
-            if (trajectory.type === TrajectoryType.PHA) {
-                ref.current.setColorAt(i, new THREE.Color('red'))
-            } else if (trajectory.kind.startsWith('c')) {
-                ref.current.setColorAt(i, new THREE.Color('lightblue'))
-            }
-        })
-        ref.current.instanceMatrix.needsUpdate = true;
-    }, [datetime])
+        const colors = calculateColors()
+        materialRef.current.array = colors
+        const sizes = calculateSizes()
+        sizeRef.current.array = sizes
+        sizeRef.current.needsUpdate = true
+    }, [trajectories])
 
-    // const instanceIndexMap = useMemo(() => {
-    //     const map = new Map<string, number>();
-    //     trajectories.forEach((trajectory, i) => {
-    //         map.set(trajectory.name, i);
-    //     });
-    //     return map;
-    // }, [trajectories])
+    useFrame(() => {
+        const positions = calculatePositions()
+        geometryRef.current.array = positions
+        geometryRef.current.needsUpdate = true
+    })
+
+    const { colors, sizes } = useMemo(() => {
+        const colors = calculateColors()
+        const sizes = calculateSizes()
+        return { colors, sizes }
+    }, [trajectories])
+
+    const positions = useMemo(() => {
+        return calculatePositions()
+    }, [trajectories, datetime])
 
     const handleHover = useCallback((e: ThreeEvent<PointerEvent>) => {
         hovered;
@@ -53,34 +79,63 @@ const Orbit: React.FC<SmallBodyOrbits> = memo(({ trajectories, datetime, hovered
     }, [setHovered])
 
     return <>
-        {/* planet constant size mesh */}
-        <instancedMesh
-            ref={ref}
-            args={[undefined, undefined, trajectories.length]}>
-            <Html
-                onPointerOver={handleHover}
-                onPointerOut={handleUnhover}
-                style={{
-                    fontSize: '12px',
-                    userSelect: 'none',
-                    textShadow: '0 0 100px black',
-                    padding: 0,
-                    margin: 0,
-                    transform: 'translate(10px, -100%)',
-                }}
-            ></Html>
-            <sphereGeometry args={[config.smallBodies.size, 32, 32]} />
-            <meshBasicMaterial color="grey" />
-        </instancedMesh>
+    {/*
+        <mesh>
+            <bufferGeometry attach="geometry">
+                <bufferAttribute attach='attributes-position' count={positions.length / 3} array={positions} itemSize={3} />
+                <bufferAttribute attach='attributes-color' count={colors.length / 3} array={colors} itemSize={3} />
+            </bufferGeometry>
+            <lineBasicMaterial vertexColors={true} />
+        </mesh>
+    */}
+        <points>
+            <bufferGeometry>
+                <bufferAttribute
+                    attach='attributes-position'
+                    ref={geometryRef}
+                    count={positions.length / 3}
+                    array={positions}
+                    itemSize={3} />
+                <bufferAttribute
+                    attach='attributes-color'
+                    ref={materialRef}
+                    count={colors.length / 3}
+                    array={colors}
+                    itemSize={3} />
+                <bufferAttribute
+                    attach='attributes-size'
+                    ref={sizeRef}
+                    count={positions.length / 3}
+                    array={sizes}
+                    itemSize={1} />
+            </bufferGeometry>
+            <shaderMaterial
+                fragmentShader={`
+                varying vec3 vColor;
 
-        {/* trajectory line */}
-        {/*<Line
-            lineWidth={hovered ? 1.5 : 1}
-            points={trajectory.points}
-            color={trajectory.color}
-            opacity={hovered ? 0.5 : 1}
-        />*/}
+                void main() {
+                    float dist = length(gl_PointCoord - 0.5);
+
+                    if (dist > 0.5) {
+                        discard;
+                    } else if (dist > 0.4) {
+                        gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+                    } else {
+                        gl_FragColor = vec4(vColor, 1.0);
+                    }
+                }
+                `}
+                vertexShader={`
+                    attribute vec3 color;
+                    varying vec3 vColor;
+                    void main() {
+                      vColor = color;
+                      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                      gl_PointSize = 10.0;
+                    }
+                `} />
+        </points>
     </>
 })
 
-export default Orbit
+export default SmallBodies

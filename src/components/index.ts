@@ -8,10 +8,11 @@ import BodiesTable from './BodiesTable';
 import TimeControls from './TimeControls';
 import ConstantSizeSphere from './ConstantSizeSphere';
 import Sun from './Sun';
+import Skybox from './Skybox';
 
 export {
     Scene, VrToggler, CelestialBody,
     SmallBodies, SideMenu, FiltersMenu,
     BodiesTable, TimeControls, Sun,
-    ConstantSizeSphere
+    ConstantSizeSphere, Skybox
 };

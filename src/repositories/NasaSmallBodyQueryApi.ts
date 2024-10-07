@@ -115,14 +115,6 @@ class NasaSmallBodyQueryApi {
         const bodies = data.map((body: any) => SmallBody.fromObject(body))
         return bodies.map(body => body.toTrajectory())
     }
-
-    async getSmallBodiesFromFile(chunk: number = 0): Promise<Trajectory[]> {
-        const file = `/data/small_bodies_${chunk}.json`
-        const response = await fetch(file)
-        const data = await response.json()
-        const bodies = (data.data as any[]).map((body: string[]) => new SmallBody(body))
-        return bodies.map(body => body.toTrajectory())
-    }
 }
 
 export default NasaSmallBodyQueryApi;
