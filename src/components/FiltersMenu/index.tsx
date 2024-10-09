@@ -8,7 +8,7 @@ import config from '../../globals/config.json'
 const FiltersMenu: React.FC = memo(() => {
     const {filters, setFilters} = useContext(FiltersContext)
     const [query, setQuery] = useState<string>(filters.query)
-    const [debouncedQuery] = useDebounce<string>(query, 500)
+    const debouncedQuery = useDebounce<string>(query, 500)
 
     useEffect(() => {
         setFilters({...filters, query: debouncedQuery})

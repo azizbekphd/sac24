@@ -1,90 +1,98 @@
 {
-    "timeDeltas": [
-        {
-            "label": "-3m",
-            "value": -7776000
+    "timeControls": {
+        "default": {
+            "time": 0,
+            "live": true,
+            "deltaIndex": 0,
+            "deltaTime": 1
         },
-        {
-            "label": "-2m",
-            "value": -5184000
-        },
-        {
-            "label": "-1m",
-            "value": -2592000
-        },
-        {
-            "label": "-2w",
-            "value": -1209600
-        },
-        {
-            "label": "-1w",
-            "value": -604800
-        },
-        {
-            "label": "-1d",
-            "value": -86400
-        },
-        {
-            "label": "-12h",
-            "value": -43200
-        },
-        {
-            "label": "-6h",
-            "value": -21600
-        },
-        {
-            "label": "-4h",
-            "value": -14400
-        },
-        {
-            "label": "-2h",
-            "value": -7200
-        },
-        {
-            "label": "Paused",
-            "value": 0
-        },
-        {
-            "label": "2h",
-            "value": 7200
-        },
-        {
-            "label": "4h",
-            "value": 14400
-        },
-        {
-            "label": "6h",
-            "value": 21600
-        },
-        {
-            "label": "12h",
-            "value": 43200
-        },
-        {
-            "label": "1d",
-            "value": 86400
-        },
-        {
-            "label": "1w",
-            "value": 604800
-        },
-        {
-            "label": "2w",
-            "value": 1209600
-        },
-        {
-            "label": "1m",
-            "value": 2592000
-        },
-        {
-            "label": "2m",
-            "value": 5184000
-        },
-        {
-            "label": "3m",
-            "value": 7776000
-        }
-    ],
+        "timeDeltas": [
+            {
+                "label": "-3m",
+                "value": -7776000
+            },
+            {
+                "label": "-2m",
+                "value": -5184000
+            },
+            {
+                "label": "-1m",
+                "value": -2592000
+            },
+            {
+                "label": "-2w",
+                "value": -1209600
+            },
+            {
+                "label": "-1w",
+                "value": -604800
+            },
+            {
+                "label": "-1d",
+                "value": -86400
+            },
+            {
+                "label": "-12h",
+                "value": -43200
+            },
+            {
+                "label": "-6h",
+                "value": -21600
+            },
+            {
+                "label": "-4h",
+                "value": -14400
+            },
+            {
+                "label": "-2h",
+                "value": -7200
+            },
+            {
+                "label": "Paused",
+                "value": 0
+            },
+            {
+                "label": "2h",
+                "value": 7200
+            },
+            {
+                "label": "4h",
+                "value": 14400
+            },
+            {
+                "label": "6h",
+                "value": 21600
+            },
+            {
+                "label": "12h",
+                "value": 43200
+            },
+            {
+                "label": "1d",
+                "value": 86400
+            },
+            {
+                "label": "1w",
+                "value": 604800
+            },
+            {
+                "label": "2w",
+                "value": 1209600
+            },
+            {
+                "label": "1m",
+                "value": 2592000
+            },
+            {
+                "label": "2m",
+                "value": 5184000
+            },
+            {
+                "label": "3m",
+                "value": 7776000
+            }
+        ]
+    },
     "smallBodies": {
         "size": 0.05,
         "minSize": 0.5,

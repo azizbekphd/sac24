@@ -1,4 +1,5 @@
 import { createContext } from "react";
+import config from "../globals/config.json";
 
 interface TimeControlsState {
     time: number;
@@ -13,12 +14,7 @@ interface TimeControlsContextType {
 }
 
 const TimeControlsContext = createContext<TimeControlsContextType>({
-    timeControls: {
-        time: new Date().getTime(),
-        live: true,
-        deltaIndex: 0,
-        deltaTime: 1
-    },
+    timeControls: config.timeControls.default,
     setTimeControls: () => {},
 });
 

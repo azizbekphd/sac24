@@ -20,12 +20,7 @@ function App() {
         planets: [],
         smallBodies: [],
     })
-    const [timeControls, setTimeControls] = useState<TimeControlsState>({
-        time: new Date().getTime(),
-        live: true,
-        deltaIndex: 0,
-        deltaTime: 1,
-    })
+    const [timeControls, setTimeControls] = useState<TimeControlsState>(config.timeControls.default)
     const [filters, setFilters] = useState<FiltersContextType>({
         filters: config.filters.default as unknown as Filters,
         setFilters: (_filters: FiltersContextType['filters']) => {
@@ -58,10 +53,17 @@ function App() {
     }, [filters, trajectories.planets])
 
     useInterval(() => {
-        setTimeControls({
-            ...timeControls,
-            time: timeControls.time + (timeControls.deltaTime * tick)
-        })
+        if (timeControls.live) {
+            setTimeControls({
+                ...timeControls,
+                time: new Date().getTime()
+            })
+        } else {
+            setTimeControls({
+                ...timeControls,
+                time: timeControls.time + (timeControls.deltaTime * tick)
+            })
+        }
     }, tick)
 
     return (<>

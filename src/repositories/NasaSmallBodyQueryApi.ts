@@ -84,7 +84,7 @@ class NasaSmallBodyQueryApi {
     }
 
     async getSmallBodies(filters: FiltersContextType['filters'], attempt: number = 0): Promise<Trajectory[]> {
-        let request = this.client.from('bodies').select('*')
+        let request = this.client.from('bodies').select('*').gt('per_y', 0)
         if (filters.query && filters.query !== '') {
             request = request.ilike('name', `%${filters.query}%`)
         }

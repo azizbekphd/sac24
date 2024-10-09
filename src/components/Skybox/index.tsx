@@ -1,9 +1,6 @@
 import * as THREE from "three";
-import { extend, useLoader, useThree } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
+import { useLoader, useThree } from "@react-three/fiber";
 import { useEffect } from "react";
-
-extend({ OrbitControls });
 
 const Skybox = () => {
     const skyboxTextures = [
@@ -13,8 +10,8 @@ const Skybox = () => {
         "bottom",
         "front",
         "back",
-    ].map((t) => `/skybox/${t}.png`);
-    const [cubeMapTexture] = useLoader(THREE.CubeTextureLoader, [skyboxTextures]);
+    ].map((t) => `/sac24/skybox/${t}.png`);
+    const [cubeMapTexture] = useLoader<any, any, any>(THREE.CubeTextureLoader, [skyboxTextures]);
     const { scene } = useThree();
 
     useEffect(() => {

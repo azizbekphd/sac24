@@ -8,7 +8,12 @@ const TimeControls: React.FC = memo(() => {
 
     return (
             <div className="time-controls">
-                <p style={{textAlign: 'right', width: 'max-content'}}>{new Date(timeControls.time).toISOString()}</p>
+                <input type="datetime-local" value={new Date(timeControls.time).toISOString().split('.')[0]} onChange={(e) => {
+                    setTimeControls({
+                        ...timeControls,
+                        time: new Date(e.target.value).getTime()
+                    })
+                }} />
                 <button onClick={() => setTimeControls({
                     ...timeControls,
                     time: new Date().getTime(),
@@ -25,7 +30,7 @@ const TimeControls: React.FC = memo(() => {
                         !timeControls.live ? (timeControls.deltaIndex === 0 ?
                             'paused' : '') : 'live'}`}
                     onChange={(e) => {
-                        const newDelta = config.timeDeltas[parseInt(e.target.value) + 10]
+                        const newDelta = config.timeControls.timeDeltas[parseInt(e.target.value) + 10]
                         setTimeControls({
                             ...timeControls,
                             live: false,
@@ -34,7 +39,7 @@ const TimeControls: React.FC = memo(() => {
                         })
                     }} />
                 <div style={{width: '60px'}}>
-                    {timeControls.live ? '' : config.timeDeltas[timeControls.deltaIndex + 10].label}
+                    {timeControls.live ? '' : config.timeControls.timeDeltas[timeControls.deltaIndex + 10].label}
                 </div>
             </div>
 

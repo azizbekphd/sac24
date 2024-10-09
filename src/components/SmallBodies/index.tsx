@@ -2,7 +2,7 @@ import * as THREE from 'three'
 import React, { memo, useEffect, useRef, useCallback, useMemo } from 'react'
 import { Trajectory } from '../../types'
 import config from '../../globals/config.json'
-import { ThreeEvent, useFrame } from '@react-three/fiber';
+import { useFrame } from '@react-three/fiber';
 import { TrajectoryType } from '../../types/Trajectory';
 
 interface SmallBodyOrbits {
@@ -13,7 +13,7 @@ interface SmallBodyOrbits {
     temp?: THREE.Object3D;
 }
 
-const SmallBodies: React.FC<SmallBodyOrbits> = memo(({ trajectories, datetime, hovered, setHovered }) =>{
+const SmallBodies: React.FC<SmallBodyOrbits> = memo(({ trajectories, datetime }) =>{
     const geometryRef = useRef<THREE.BufferAttribute>(null!)
     const sizeRef = useRef<THREE.BufferAttribute>(null!)
     const materialRef = useRef<THREE.BufferAttribute>(null!)
@@ -69,25 +69,7 @@ const SmallBodies: React.FC<SmallBodyOrbits> = memo(({ trajectories, datetime, h
         return calculatePositions()
     }, [trajectories, datetime])
 
-    const handleHover = useCallback((e: ThreeEvent<PointerEvent>) => {
-        hovered;
-        setHovered(e.instanceId?.toString() ?? null)
-    }, [setHovered])
-
-    const handleUnhover = useCallback((_: ThreeEvent<PointerEvent>) => {
-        setHovered(null)
-    }, [setHovered])
-
     return <>
-    {/*
-        <mesh>
-            <bufferGeometry attach="geometry">
-                <bufferAttribute attach='attributes-position' count={positions.length / 3} array={positions} itemSize={3} />
-                <bufferAttribute attach='attributes-color' count={colors.length / 3} array={colors} itemSize={3} />
-            </bufferGeometry>
-            <lineBasicMaterial vertexColors={true} />
-        </mesh>
-    */}
         <points>
             <bufferGeometry>
                 <bufferAttribute

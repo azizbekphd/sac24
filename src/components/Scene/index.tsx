@@ -1,6 +1,6 @@
 import "./index.css"
 import { Canvas, extend } from "@react-three/fiber";
-import { OrbitControls, Stats } from "@react-three/drei";
+import { OrbitControls } from "@react-three/drei";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { IfInSessionMode, XR } from "@react-three/xr";
 import { TrajectoriesContext, XRContext, TimeControlsContext, TrajectoriesContextType } from "../../contexts";
@@ -99,7 +99,6 @@ function Scene() {
                     <IfInSessionMode deny={['immersive-ar', 'immersive-vr']} >
                         <OrbitControls enablePan={false} minDistance={1} maxDistance={200} camera={camera} />
                     </IfInSessionMode>
-                    <Stats />
                 </XR>
                 <Skybox />
             </Canvas>
