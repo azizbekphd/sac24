@@ -5,7 +5,8 @@ import config from '../../globals/config.json'
 import { ThreeEvent, useFrame } from '@react-three/fiber';
 import { TrajectoryType } from '../../types/Trajectory';
 import { FocusContext } from '../../contexts';
-import { Line } from '@react-three/drei';
+import { Html, Line } from '@react-three/drei';
+import './index.css'
 
 interface SmallBodyOrbits {
     trajectories: Trajectory[];
@@ -18,6 +19,7 @@ const SmallBodies: React.FC<SmallBodyOrbits> = memo(({ trajectories, datetime })
     const sizeRef = useRef<THREE.BufferAttribute>(null!)
     const materialRef = useRef<THREE.BufferAttribute>(null!)
     const { hovered } = useContext(FocusContext);
+    const hoveredLabelRef = useRef<THREE.Mesh>(null!)
 
     const calculateColors = useCallback(() => {
         const colors = new Float32Array(trajectories.map(t => {
@@ -76,10 +78,24 @@ const SmallBodies: React.FC<SmallBodyOrbits> = memo(({ trajectories, datetime })
     const hoveredParams = useMemo(() => {
         const index = trajectories.findIndex(t => t.id === hovered.objectId)
         if (index === -1) return null
-        const points = trajectories[index].points
+        const trajectory = trajectories[index]
         const color = new THREE.Color(...colors.slice(index * 3, index * 3 + 3).map(c => c * 256)).getHex()
-        return { points, color }
+        const position = new THREE.Vector3(...positions.slice(index * 3, index * 3 + 3))
+        return {
+            name: trajectory.name,
+            points: trajectory.points,
+            position,
+            color
+        }
     }, [trajectories, hovered.objectId])
+
+    useFrame(() => {
+        if (hoveredLabelRef.current) {
+            const index = trajectories.findIndex(t => t.id === hovered.objectId)
+            const position = new THREE.Vector3(...positions.slice(index * 3, index * 3 + 3))
+            hoveredLabelRef.current.position.set(position.x, position.y, position.z)
+        }
+    })
 
     const handlePointerOver = useCallback((e: ThreeEvent<PointerEvent>) => {
         e.stopPropagation()
@@ -153,6 +169,19 @@ const SmallBodies: React.FC<SmallBodyOrbits> = memo(({ trajectories, datetime })
                 color={hoveredParams.color}
                 opacity={1}
             />
+        }
+        {/* body name */}
+        {hoveredParams &&
+            <mesh ref={hoveredLabelRef} position={hoveredParams.position}>
+                <Html
+                    className='trajectory-label'
+                    style={{
+                        color: hoveredParams.color.toString(),
+                        opacity: 1,
+                        transform: 'translate(10px, -50%)',
+                    }}
+                >{hoveredParams.name}</Html>
+            </mesh>
         }
     </>
 })

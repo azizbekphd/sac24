@@ -33,18 +33,11 @@ const Orbit: React.FC<OrbitProps> = memo(({ trajectory, datetime }) =>{
             <Html
                 onPointerOver={() => hovered.setObjectId(trajectory.id)}
                 onPointerOut={() => hovered.setObjectId(null)}
+                className='trajectory-label'
                 style={{
-                    transitionDuration: '0.2s',
                     color: trajectory.color,
-                    fontSize: '12px',
-                    textShadow: '0 0 100px black',
-                    padding: 0,
-                    margin: 0,
                     opacity: hoveredToThis ? 1 : 0.8,
                     transform: hoveredToThis ? 'translate(7px, -50%)' : 'translate(10px, -50%)',
-                    zIndex: 5,
-                    borderRadius: '5px',
-                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
                 }}
             >{trajectory.name}</Html>
             <sphereGeometry args={[hoveredToThis ? .5 : .4, 32, 32]} />
