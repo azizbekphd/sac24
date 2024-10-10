@@ -14,5 +14,5 @@ export {
     Scene, VrToggler, CelestialBody,
     SmallBodies, SideMenu, FiltersMenu,
     BodiesTable, TimeControls, Sun,
-    ConstantSizeSphere, Skybox
+    ConstantSizeSphere, Skybox,
 };

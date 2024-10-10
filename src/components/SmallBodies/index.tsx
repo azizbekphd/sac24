@@ -1,15 +1,15 @@
 import * as THREE from 'three'
-import React, { memo, useEffect, useRef, useCallback, useMemo } from 'react'
+import React, { memo, useEffect, useRef, useCallback, useMemo, useContext } from 'react'
 import { Trajectory } from '../../types'
 import config from '../../globals/config.json'
-import { useFrame } from '@react-three/fiber';
+import { ThreeEvent, useFrame } from '@react-three/fiber';
 import { TrajectoryType } from '../../types/Trajectory';
+import { FocusContext } from '../../contexts';
+import { Line } from '@react-three/drei';
 
 interface SmallBodyOrbits {
     trajectories: Trajectory[];
     datetime: Date;
-    hovered: string | null;
-    setHovered: (hovered: string | null) => void;
     temp?: THREE.Object3D;
 }
 
@@ -17,6 +17,7 @@ const SmallBodies: React.FC<SmallBodyOrbits> = memo(({ trajectories, datetime })
     const geometryRef = useRef<THREE.BufferAttribute>(null!)
     const sizeRef = useRef<THREE.BufferAttribute>(null!)
     const materialRef = useRef<THREE.BufferAttribute>(null!)
+    const { hovered } = useContext(FocusContext);
 
     const calculateColors = useCallback(() => {
         const colors = new Float32Array(trajectories.map(t => {
@@ -33,10 +34,13 @@ const SmallBodies: React.FC<SmallBodyOrbits> = memo(({ trajectories, datetime })
 
     const calculateSizes = useCallback(() => {
         const sizes = new Float32Array(trajectories.map(t => {
-            return Math.max(Math.min(t.diameter / 1000, config.smallBodies.maxSize), config.smallBodies.minSize)
+            const diameter = t.id === hovered.objectId ? 10 : t.diameter
+            return Math.max(Math.min(
+                diameter / 1000,
+                config.smallBodies.maxSize), config.smallBodies.minSize)
         }).flat())
         return sizes
-    }, [trajectories])
+    }, [trajectories, hovered.objectId])
 
     const calculatePositions = useCallback(() => {
         const positions = new Float32Array(trajectories.map(t => {
@@ -51,7 +55,7 @@ const SmallBodies: React.FC<SmallBodyOrbits> = memo(({ trajectories, datetime })
         const sizes = calculateSizes()
         sizeRef.current.array = sizes
         sizeRef.current.needsUpdate = true
-    }, [trajectories])
+    }, [trajectories, hovered.objectId])
 
     useFrame(() => {
         const positions = calculatePositions()
@@ -69,8 +73,30 @@ const SmallBodies: React.FC<SmallBodyOrbits> = memo(({ trajectories, datetime })
         return calculatePositions()
     }, [trajectories, datetime])
 
+    const hoveredParams = useMemo(() => {
+        const index = trajectories.findIndex(t => t.id === hovered.objectId)
+        if (index === -1) return null
+        const points = trajectories[index].points
+        const color = new THREE.Color(...colors.slice(index * 3, index * 3 + 3).map(c => c * 256)).getHex()
+        return { points, color }
+    }, [trajectories, hovered.objectId])
+
+    const handlePointerOver = useCallback((e: ThreeEvent<PointerEvent>) => {
+        e.stopPropagation()
+        const index = e.intersections.sort((a, b) => a.distanceToRay! - b.distanceToRay!)[0].index!
+        hovered.setObjectId(trajectories[index].id)
+    }, [])
+
+    const handlePointerOut = useCallback((e: any) => {
+        e.stopPropagation()
+        hovered.setObjectId(null)
+    }, [])
+
     return <>
-        <points>
+        <points
+            onPointerMove={handlePointerOver}
+            onPointerOut={handlePointerOut}
+        >
             <bufferGeometry>
                 <bufferAttribute
                     attach='attributes-position'
@@ -117,6 +143,17 @@ const SmallBodies: React.FC<SmallBodyOrbits> = memo(({ trajectories, datetime })
                     }
                 `} />
         </points>
+
+
+        {/* trajectory line for hovered object */}
+        {hoveredParams &&
+            <Line
+                lineWidth={1}
+                points={hoveredParams.points}
+                color={hoveredParams.color}
+                opacity={1}
+            />
+        }
     </>
 })
 
