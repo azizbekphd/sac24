@@ -4,7 +4,6 @@ import { TrajectoryType } from '../types/Trajectory';
 import config from '../globals/config.json'
 import { FiltersContextType } from '../contexts';
 import { Filters } from '../contexts/FiltersContext';
-import firstValues from '../assets/data/first_values.json'
 
 
 class SmallBody {
@@ -121,15 +120,16 @@ class NasaSmallBodyQueryApi {
     }
 
     async getFirstValues(): Promise<Trajectory[]> {
+        const firstValues = await fetch('/sac24/data/first_values.json').then(res => res.json())
         const columns = firstValues.fields;
         const rows = firstValues.data;
-        const result = rows.map(row =>
+        const result = rows.map((row: any) =>
           row.reduce(
-            (result, field, index) => ({ ...result, [columns[index]]: field }),
+            (result: any, field: any, index: number) => ({ ...result, [columns[index]]: field }),
             {}
           )
         )
-        return result.map(body => SmallBody.fromObject(body).toTrajectory())
+        return result.map((body: any) => SmallBody.fromObject(body).toTrajectory())
     }
 }
 
