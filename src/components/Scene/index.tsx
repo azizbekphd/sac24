@@ -91,7 +91,7 @@ function Scene() {
                         <OrbitControls enablePan={false} minDistance={1} maxDistance={200} camera={camera} />
                     </IfInSessionMode>
                 </XR>
-                <Skybox />
+                {objects.planets ? <Skybox /> : <></>}
             </Canvas>
             {/*<button onClick={() => {xrStore.enterVR()}} className="enter-vr">Enter VR</button>*/}
         </>
