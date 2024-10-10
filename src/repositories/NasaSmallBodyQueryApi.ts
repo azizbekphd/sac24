@@ -129,10 +129,6 @@ class NasaSmallBodyQueryApi {
             {}
           )
         )
-        result.forEach(body => {
-            body.neo = body.neo === 'Y'
-            body.pha = body.pha === 'Y'
-        })
         return result.map(body => SmallBody.fromObject(body).toTrajectory())
     }
 }
