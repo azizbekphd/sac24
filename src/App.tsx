@@ -51,8 +51,10 @@ function App() {
                     smallBodies: [...smallBodies]
                 })
             })
+        } else {
+            setFilters({...filters})
         }
-    }, [filters, trajectories.planets])
+    }, [filters])
 
     useInterval(() => {
         if (timeControls.live) {
