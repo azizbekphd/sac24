@@ -25,7 +25,6 @@ function Scene() {
     const xrCamera = new PerspectiveCamera();
     const [mode, setMode] = useState<ViewMode>(ViewMode.normal);
     const [camera, setCamera] = useState<PerspectiveCamera>(normalCamera);
-    const [hovered, setHovered] = useState<string | null>(null);
 
     useEffect(() => {
         xrStore.subscribe((state, prevState) => {
@@ -58,10 +57,6 @@ function Scene() {
         camera.updateProjectionMatrix();
     }, [mode])
 
-    useEffect(() => {
-        console.log(hovered)
-    }, [hovered])
-
     const smallBodiesChunks = useMemo(() => {
         const chunks = []
         for (let i = 0; i < objects.smallBodies.length; i += config.smallBodies.chunkSize) {
@@ -86,16 +81,12 @@ function Scene() {
                         (obj, i) => <Orbit
                             key={i.toString()}
                             trajectory={obj}
-                            datetime={new Date(timeControls.time)}
-                            hovered={hovered}
-                            setHovered={setHovered} />
+                            datetime={new Date(timeControls.time)} />
                     )}
                     {smallBodiesChunks.map((chunk) => <SmallBodies
                         key={chunk.map(obj => obj.id).join()}
                         trajectories={chunk}
-                        datetime={new Date(timeControls.time)}
-                        hovered={hovered}
-                        setHovered={setHovered} />)}
+                        datetime={new Date(timeControls.time)} />)}
                     <IfInSessionMode deny={['immersive-ar', 'immersive-vr']} >
                         <OrbitControls enablePan={false} minDistance={1} maxDistance={200} camera={camera} />
                     </IfInSessionMode>

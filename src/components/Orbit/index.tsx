@@ -1,19 +1,19 @@
 import * as THREE from 'three'
-import React, { memo, useEffect, useMemo, useRef } from 'react'
+import React, { memo, useContext, useEffect, useMemo, useRef } from 'react'
 import { Trajectory } from '../../types'
 import { Html, Line } from '@react-three/drei';
 import { useThree } from '@react-three/fiber';
+import { FocusContext } from '../../contexts';
 
 interface OrbitProps {
     trajectory: Trajectory;
     datetime: Date;
-    hovered: string | null;
-    setHovered: (hovered: string | null) => void;
 }
 
-const Orbit: React.FC<OrbitProps> = memo(({ trajectory, datetime, hovered, setHovered }) =>{
+const Orbit: React.FC<OrbitProps> = memo(({ trajectory, datetime }) =>{
     const constantSizeRef = useRef<THREE.Mesh>(null!)
     const { camera } = useThree()
+    const { hovered } = useContext(FocusContext);
 
     useEffect(() => {
         const position = trajectory.propagateFromTime(datetime.getTime())
@@ -24,15 +24,15 @@ const Orbit: React.FC<OrbitProps> = memo(({ trajectory, datetime, hovered, setHo
     }, [datetime])
 
     const hoveredToThis = useMemo(() => {
-        return hovered === trajectory.id
+        return hovered.objectId === trajectory.id
     }, [trajectory, hovered])
 
     return <>
         {/* planet constant size mesh */}
-        <mesh ref={constantSizeRef} onPointerOver={() => setHovered(trajectory.id)} onPointerOut={() => setHovered(null)}>
+        <mesh ref={constantSizeRef} onPointerOver={() => hovered.setObjectId(trajectory.id)} onPointerOut={() => hovered.setObjectId(null)}>
             <Html
-                onPointerOver={() => setHovered(trajectory.id)}
-                onPointerOut={() => setHovered(null)}
+                onPointerOver={() => hovered.setObjectId(trajectory.id)}
+                onPointerOut={() => hovered.setObjectId(null)}
                 style={{
                     transitionDuration: '0.2s',
                     color: trajectory.color,

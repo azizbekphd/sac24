@@ -1,16 +1,17 @@
 import { createContext } from "react";
-import { Focus } from "../types";
 
 
-interface FocusContextType {
-    focus: Focus;
-    setFocus: (focus: Focus) => void;
+interface FocusItem {
+    objectId: string;
+    setObjectId: (objectId: string | null) => void;
 }
 
-const FocusContext = createContext<FocusContextType>({
-    focus: new Focus(),
-    setFocus: (_: Focus) => {}
-});
+interface FocusContextType {
+    selected: FocusItem;
+    hovered: FocusItem;
+}
+
+const FocusContext = createContext<FocusContextType>(null!);
 
 export default FocusContext;
 export { type FocusContextType };

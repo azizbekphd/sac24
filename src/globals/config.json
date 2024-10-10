@@ -95,12 +95,12 @@
     },
     "smallBodies": {
         "size": 0.05,
-        "minSize": 0.5,
-        "maxSize": 1,
+        "minSize": 0.05,
+        "maxSize": 0.1,
         "chunkSize": 10000,
         "segments": 5,
         "phaColor": [1, 0, 0],
-        "cometColor": [0.265625, 0.3515625, 0.3515625],
+        "cometColor": [0, 0.7890625, 0.92578125],
         "asteroidColor": [0.5859375, 0.5859375, 0.5859375]
     },
     "supabase": {
@@ -392,5 +392,15 @@
                 ]
             }
         ]
+    },
+    "focus": {
+        "default": {
+            "selected": {
+                "objectId": null
+            },
+            "hovered": {
+                "objectId": null
+            }
+        }
     }
 }

@@ -4,7 +4,7 @@ import { Scene, SideMenu, TimeControls } from './components'
 import { MultipleContextProvider } from './utils'
 import { FiltersContextType, FocusContext, TrajectoriesContext, TrajectoriesContextType, XRContext, Filters, FiltersContext } from './contexts'
 import { createXRStore } from '@react-three/xr'
-import { Focus, TrajectoryUtils } from './types'
+import { TrajectoryUtils } from './types'
 import TimeControlsContext, { type TimeControlsState } from './contexts/TimeControllerContext'
 import { useInterval } from './hooks'
 import config from './globals/config.json'
@@ -27,6 +27,8 @@ function App() {
             setFilters({ ...filters, filters: _filters })
         }
     })
+    const [selected, setSelected] = useState<string | null>(config.focus.default.selected.objectId)
+    const [hovered, setHovered] = useState<string | null>(config.focus.default.hovered.objectId)
 
     useEffect(() => {
         if (trajectories.planets.length === 0) {
@@ -77,7 +79,16 @@ function App() {
                 context: TimeControlsContext,
                 value: { timeControls, setTimeControls }
             },
-            { context: FocusContext, value: new Focus() },
+            { context: FocusContext, value: {
+                selected: {
+                    objectId: selected,
+                    setObjectId: setSelected
+                },
+                hovered: {
+                    objectId: hovered,
+                    setObjectId: setHovered
+                }
+            },},
             { context: XRContext, value: memoizedXrStore }
         ]}>
             <Scene />
