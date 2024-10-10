@@ -4,7 +4,7 @@ import { TrajectoryType } from '../types/Trajectory';
 import config from '../globals/config.json'
 import { FiltersContextType } from '../contexts';
 import { Filters } from '../contexts/FiltersContext';
-import tenKSB from '../assets/data/10k_sb.json'
+import firstValues from '../assets/data/first_values.json'
 
 
 class SmallBody {
@@ -85,6 +85,9 @@ class NasaSmallBodyQueryApi {
     }
 
     async getSmallBodies(filters: FiltersContextType['filters'], attempt: number = 0): Promise<Trajectory[]> {
+        if (JSON.stringify(filters) === JSON.stringify(config.filters.default)) {
+            return await this.getFirstValues()
+        }
         let request = this.client.from('bodies').select('*')
         if (filters.query && filters.query !== '') {
             request = request.ilike('name', `%${filters.query}%`)
@@ -117,9 +120,9 @@ class NasaSmallBodyQueryApi {
         return bodies.map(body => body.toTrajectory())
     }
 
-    async get10KBodies(): Promise<Trajectory[]> {
-        const columns = tenKSB.fields;
-        const rows = tenKSB.data;
+    async getFirstValues(): Promise<Trajectory[]> {
+        const columns = firstValues.fields;
+        const rows = firstValues.data;
         const result = rows.map(row =>
           row.reduce(
             (result, field, index) => ({ ...result, [columns[index]]: field }),
