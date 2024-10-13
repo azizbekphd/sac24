@@ -1,7 +1,7 @@
 import "./index.css"
 import { Canvas, extend } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { IfInSessionMode, XR } from "@react-three/xr";
 import { TrajectoriesContext, XRContext, TimeControlsContext, TrajectoriesContextType } from "../../contexts";
 import { PerspectiveCamera } from "three";
@@ -25,6 +25,7 @@ function Scene() {
     const xrCamera = new PerspectiveCamera();
     const [mode, setMode] = useState<ViewMode>(ViewMode.normal);
     const [camera, setCamera] = useState<PerspectiveCamera>(normalCamera);
+    const orbitControlsRef = useRef(null!);
 
     useEffect(() => {
         xrStore.subscribe((state, prevState) => {
@@ -52,10 +53,13 @@ function Scene() {
 
     useEffect(() => {
         setCamera(mode === ViewMode.normal ? normalCamera : xrCamera)
+    }, [mode])
+
+    useEffect(() => {
         camera.position.set(20, 20, 20);
         camera.lookAt(0, 0, 0);
         camera.updateProjectionMatrix();
-    }, [mode])
+    }, [camera])
 
     const smallBodiesChunks = useMemo(() => {
         const chunks = []
@@ -64,6 +68,11 @@ function Scene() {
         }
         return chunks
     }, [objects.smallBodies])
+
+    // const updateControls = useCallback(() => {
+    //     if (!orbitControlsRef.current) return;
+    //     orbitControlsRef.current.update()
+    // }, [camera])
 
     return (
         <>
@@ -74,22 +83,26 @@ function Scene() {
                 frameloop="demand">
                 <XR store={xrStore}>
                     <ambientLight intensity={Math.PI / 2} />
-                    <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={0} intensity={Math.PI} />
-                    <pointLight position={[-10, -10, -10]} decay={0} intensity={Math.PI} />
+                    <pointLight position={[0, 0, 0]} decay={0} intensity={Math.PI} />
                     <Sun />
                     {objects.planets.map(
                         (obj, i) => <Orbit
                             key={i.toString()}
                             trajectory={obj}
-                            datetime={new Date(timeControls.time)} />
+                            timestamp={timeControls.time} />
                     )}
                     {smallBodiesChunks.map((chunk) => <SmallBodies
                         key={chunk.map(obj => obj.id).join()}
                         trajectories={chunk}
-                        datetime={new Date(timeControls.time)} />)}
+                        timestamp={timeControls.time} />)}
                     <IfInSessionMode deny={['immersive-ar', 'immersive-vr']} >
-                        <OrbitControls enablePan={false} minDistance={1} maxDistance={200} camera={camera} />
+                        <OrbitControls ref={orbitControlsRef}  enablePan={false} minDistance={1} maxDistance={400} camera={camera} />
                     </IfInSessionMode>
+                    {/*<CameraController
+                        camera={camera}
+                        updateCallback={updateControls}
+                        controls={orbitControlsRef.current}
+                        timestamp={timeControls.time} />*/}
                 </XR>
                 {objects.planets ? <Skybox /> : <></>}
             </Canvas>

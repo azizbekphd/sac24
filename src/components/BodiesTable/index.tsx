@@ -1,11 +1,12 @@
 import { useContext, memo, useEffect, useState } from 'react';
-import { TrajectoriesContext, FiltersContext } from '../../contexts';
+import { TrajectoriesContext, FiltersContext, FocusContext } from '../../contexts';
 import './index.css'
 import config from '../../globals/config.json'
 
 const BodiesTable: React.FC = memo(() => {
     const { smallBodies } = useContext(TrajectoriesContext)
     const { filters, setFilters } = useContext(FiltersContext)
+    const { hovered, selected } = useContext(FocusContext)
 
     const [page, setPage] = useState(0); // Start from page 0
     const [pageSize, setPageSize] = useState(config.filters.default.range[1]);
@@ -62,7 +63,26 @@ const BodiesTable: React.FC = memo(() => {
                 </thead>
                 <tbody>
                     {smallBodies.map((body, i) => (
-                        <tr key={i}>
+                        <tr
+                            key={i}
+                            style={{
+                                backgroundColor: selected.objectId === body.id ?
+                                '#f0f0f0' :
+                                (hovered.objectId === body.id ? '#f3f3f3' : '#ffffff')
+                            }}
+                            onPointerMove={(e) => {
+                                e.stopPropagation()
+                                hovered.setObjectId(body.id)
+                            }}
+                            onPointerOut={(e) => {
+                                e.stopPropagation()
+                                hovered.setObjectId(null)
+                            }}
+                            onClick={(e) => {
+                                e.stopPropagation()
+                                selected.setObjectId(body.id)
+                            }}
+                        >
                             <td>{body.name}</td>
                             <td>{body.diameter}</td>
                         </tr>

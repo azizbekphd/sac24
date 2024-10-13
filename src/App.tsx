@@ -89,7 +89,8 @@ function App() {
                 hovered: {
                     objectId: hovered,
                     setObjectId: setHovered
-                }
+                },
+                center: [0, 0, 0]
             },},
             { context: XRContext, value: memoizedXrStore }
         ]}>

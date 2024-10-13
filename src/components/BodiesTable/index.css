@@ -4,6 +4,10 @@
     font-size: 0.8rem;
 }
 
+.bodies-table * {
+    cursor: pointer;
+}
+
 .bodies-table table {
     width: 100%;
     border-collapse: collapse;
