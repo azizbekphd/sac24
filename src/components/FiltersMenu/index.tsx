@@ -27,7 +27,13 @@ const FiltersMenu: React.FC = memo(() => {
             <MenuSection title="Kind/group">
                 <div className="row">
                     <label>Group</label>
-                    <select value={filters.group} onChange={(e) => setFilters({...filters, group: e.target.value as Filters['group']})}>
+                    <select value={filters.group} onChange={
+                            (e) => setFilters({
+                                ...filters,
+                                range: [0, filters.range[1]],
+                                group: e.target.value as Filters['group']
+                            })
+                    }>
                         <option value="all">All</option>
                         <option value="neo">NEO</option>
                         <option value="pha">PHA</option>
@@ -35,7 +41,13 @@ const FiltersMenu: React.FC = memo(() => {
                 </div>
                 <div className="row">
                     <label>Kind</label>
-                    <select value={filters.kind} onChange={(e) => setFilters({...filters, kind: e.target.value as Filters['kind']})}>
+                    <select value={filters.kind} onChange={
+                            (e) => setFilters({
+                                ...filters,
+                                range: [0, filters.range[1]],
+                                kind: e.target.value as Filters['kind']
+                            })
+                    }>
                         <option value="all">All</option>
                         <option value="asteroids">Asteroids</option>
                         <option value="comets">Comets</option>
@@ -43,7 +55,13 @@ const FiltersMenu: React.FC = memo(() => {
                 </div>
                 <div className="row">
                     <label>Numbered state</label>
-                    <select value={filters.numberedState} onChange={(e) => setFilters({...filters, numberedState: e.target.value as Filters['numberedState']})}>
+                    <select value={filters.numberedState} onChange={
+                            (e) => setFilters({
+                                ...filters,
+                                range: [0, filters.range[1]],
+                                numberedState: e.target.value as Filters['numberedState']
+                            })
+                    }>
                         <option value="all">All</option>
                         <option value="numbered">Numbered</option>
                         <option value="unnumbered">Unnumbered</option>
@@ -70,6 +88,7 @@ const FiltersMenu: React.FC = memo(() => {
                                     }
                                     setFilters({
                                         ...filters,
+                                        range: [0, filters.range[1]],
                                         asteroidClasses: ac
                                     })
                                 }}
@@ -102,6 +121,7 @@ const FiltersMenu: React.FC = memo(() => {
                                     }
                                     setFilters({
                                         ...filters,
+                                        range: [0, filters.range[1]],
                                         cometClasses: ac
                                     })
                                 }}

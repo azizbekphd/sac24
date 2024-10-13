@@ -9,10 +9,11 @@ import TimeControls from './TimeControls';
 import ConstantSizeSphere from './ConstantSizeSphere';
 import Sun from './Sun';
 import Skybox from './Skybox';
+import CameraController from './CameraController';
 
 export {
     Scene, VrToggler, CelestialBody,
     SmallBodies, SideMenu, FiltersMenu,
     BodiesTable, TimeControls, Sun,
-    ConstantSizeSphere, Skybox,
+    ConstantSizeSphere, Skybox, CameraController
 };

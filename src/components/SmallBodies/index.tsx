@@ -10,16 +10,17 @@ import './index.css'
 
 interface SmallBodyOrbits {
     trajectories: Trajectory[];
-    datetime: Date;
+    timestamp: number;
     temp?: THREE.Object3D;
 }
 
-const SmallBodies: React.FC<SmallBodyOrbits> = memo(({ trajectories, datetime }) =>{
+const SmallBodies: React.FC<SmallBodyOrbits> = memo(({ trajectories, timestamp }) =>{
     const geometryRef = useRef<THREE.BufferAttribute>(null!)
     const sizeRef = useRef<THREE.BufferAttribute>(null!)
     const materialRef = useRef<THREE.BufferAttribute>(null!)
-    const { hovered } = useContext(FocusContext);
+    const { hovered, selected } = useContext(FocusContext);
     const hoveredLabelRef = useRef<THREE.Mesh>(null!)
+    const selectedLabelRef = useRef<THREE.Mesh>(null!)
 
     const calculateColors = useCallback(() => {
         const colors = new Float32Array(trajectories.map(t => {
@@ -46,10 +47,10 @@ const SmallBodies: React.FC<SmallBodyOrbits> = memo(({ trajectories, datetime })
 
     const calculatePositions = useCallback(() => {
         const positions = new Float32Array(trajectories.map(t => {
-            return t.propagateFromTime(datetime.getTime())
+            return t.propagateFromTime(timestamp)
         }).flat())
         return positions
-    }, [trajectories, datetime])
+    }, [trajectories, timestamp])
 
     useEffect(() => {
         const colors = calculateColors()
@@ -73,21 +74,29 @@ const SmallBodies: React.FC<SmallBodyOrbits> = memo(({ trajectories, datetime })
 
     const positions = useMemo(() => {
         return calculatePositions()
-    }, [trajectories, datetime])
+    }, [trajectories, timestamp])
 
-    const hoveredParams = useMemo(() => {
-        const index = trajectories.findIndex(t => t.id === hovered.objectId)
+    const getParamsById = useCallback((objectId: string) => {
+        const index = trajectories.findIndex(t => t.id === objectId)
         if (index === -1) return null
         const trajectory = trajectories[index]
-        const color = new THREE.Color(...colors.slice(index * 3, index * 3 + 3).map(c => c * 256)).getHex()
-        const position = new THREE.Vector3(...positions.slice(index * 3, index * 3 + 3))
+        const color = `#${new THREE.Color(...colors.slice(index * 3, index * 3 + 3).map(c => c * 255)).getHexString()}`
+        const position = positions.slice(index * 3, index * 3 + 3)
         return {
             name: trajectory.name,
             points: trajectory.points,
             position,
             color
         }
+    }, [trajectories])
+
+    const hoveredParams = useMemo(() => {
+        return getParamsById(hovered.objectId)
     }, [trajectories, hovered.objectId])
+
+    const selectedParams = useMemo(() => {
+        return getParamsById(selected.objectId)
+    }, [trajectories, selected.objectId])
 
     useFrame(() => {
         if (hoveredLabelRef.current) {
@@ -95,23 +104,42 @@ const SmallBodies: React.FC<SmallBodyOrbits> = memo(({ trajectories, datetime })
             const position = new THREE.Vector3(...positions.slice(index * 3, index * 3 + 3))
             hoveredLabelRef.current.position.set(position.x, position.y, position.z)
         }
+
+        if (selectedLabelRef.current) {
+            const index = trajectories.findIndex(t => t.id === selected.objectId)
+            const position = new THREE.Vector3(...positions.slice(index * 3, index * 3 + 3))
+            selectedLabelRef.current.position.set(position.x, position.y, position.z)
+        }
     })
 
     const handlePointerOver = useCallback((e: ThreeEvent<PointerEvent>) => {
         e.stopPropagation()
         const index = e.intersections.sort((a, b) => a.distanceToRay! - b.distanceToRay!)[0].index!
+        if (index === -1) return false
         hovered.setObjectId(trajectories[index].id)
-    }, [])
+    }, [trajectories])
 
     const handlePointerOut = useCallback((e: any) => {
         e.stopPropagation()
         hovered.setObjectId(null)
     }, [])
 
+    const handleClick = useCallback((e: ThreeEvent<PointerEvent>) => {
+        e.stopPropagation()
+        if (hovered.objectId) {
+            selected.setObjectId(hovered.objectId)
+            return
+        }
+        const index = e.intersections.sort((a, b) => a.distanceToRay! - b.distanceToRay!)[0].index!
+        if (index === -1) return false
+        selected.setObjectId(trajectories[index].id)
+    }, [trajectories, hovered.objectId])
+
     return <>
         <points
-            onPointerMove={handlePointerOver}
+            onPointerOver={handlePointerOver}
             onPointerOut={handlePointerOut}
+            onPointerDown={handleClick}
         >
             <bufferGeometry>
                 <bufferAttribute
@@ -162,7 +190,7 @@ const SmallBodies: React.FC<SmallBodyOrbits> = memo(({ trajectories, datetime })
 
 
         {/* trajectory line for hovered object */}
-        {hoveredParams &&
+        {hoveredParams && hovered.objectId !== selected.objectId &&
             <Line
                 lineWidth={1}
                 points={hoveredParams.points}
@@ -170,17 +198,44 @@ const SmallBodies: React.FC<SmallBodyOrbits> = memo(({ trajectories, datetime })
                 opacity={1}
             />
         }
-        {/* body name */}
-        {hoveredParams &&
-            <mesh ref={hoveredLabelRef} position={hoveredParams.position}>
+        {/* body name for hovered object */}
+        {hoveredParams && hovered.objectId !== selected.objectId &&
+            <mesh ref={hoveredLabelRef} position={new THREE.Vector3(...hoveredParams.position)}>
                 <Html
                     className='trajectory-label'
                     style={{
-                        color: hoveredParams.color.toString(),
-                        opacity: 1,
+                        color: hoveredParams.color,
+                        opacity: 0.8,
+                        zIndex: '7',
                         transform: 'translate(10px, -50%)',
                     }}
                 >{hoveredParams.name}</Html>
+            </mesh>
+        }
+
+
+        {/* trajectory line for selected object */}
+        {selectedParams &&
+            <Line
+                lineWidth={1.5}
+                points={selectedParams.points}
+                color={selectedParams.color}
+                opacity={1}
+            />
+        }
+        {/* body name for selected object */}
+        {selectedParams &&
+            <mesh ref={selectedLabelRef} position={new THREE.Vector3(...selectedParams.position)}>
+                <Html
+                    className='trajectory-label'
+                    style={{
+                        fontSize: '13px',
+                        color: selectedParams.color,
+                        opacity: 1,
+                        zIndex: '6',
+                        transform: 'translate(10px, -50%)',
+                    }}
+                >{selectedParams.name}</Html>
             </mesh>
         }
     </>

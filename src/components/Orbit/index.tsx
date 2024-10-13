@@ -7,49 +7,65 @@ import { FocusContext } from '../../contexts';
 
 interface OrbitProps {
     trajectory: Trajectory;
-    datetime: Date;
+    timestamp: number;
 }
 
-const Orbit: React.FC<OrbitProps> = memo(({ trajectory, datetime }) =>{
+const Orbit: React.FC<OrbitProps> = memo(({ trajectory, timestamp }) =>{
     const constantSizeRef = useRef<THREE.Mesh>(null!)
     const { camera } = useThree()
-    const { hovered } = useContext(FocusContext);
+    const { hovered, selected } = useContext(FocusContext);
 
     useEffect(() => {
-        const position = trajectory.propagateFromTime(datetime.getTime())
+        const position = trajectory.propagateFromTime(timestamp)
         constantSizeRef.current.position.set(position[0], position[1], position[2])
         const distance = constantSizeRef.current.position.distanceTo(camera.position);
         const scaleFactor = distance * 0.01;
         constantSizeRef.current.scale.set(scaleFactor, scaleFactor, scaleFactor);
-    }, [datetime])
+    }, [timestamp])
 
-    const hoveredToThis = useMemo(() => {
-        return hovered.objectId === trajectory.id
-    }, [trajectory, hovered])
+    const highlight = useMemo(() => {
+        return hovered.objectId === trajectory.id ||
+            selected.objectId === trajectory.id
+    }, [trajectory, hovered.objectId, selected.objectId])
 
     return <>
         {/* planet constant size mesh */}
-        <mesh ref={constantSizeRef} onPointerOver={() => hovered.setObjectId(trajectory.id)} onPointerOut={() => hovered.setObjectId(null)}>
+        <mesh
+            ref={constantSizeRef}
+            onPointerOver={() => hovered.setObjectId(trajectory.id)}
+            onPointerOut={() => hovered.setObjectId(null)}
+            onPointerDown={() => hovered.setObjectId(trajectory.id)}
+        >
             <Html
-                onPointerOver={() => hovered.setObjectId(trajectory.id)}
-                onPointerOut={() => hovered.setObjectId(null)}
+                onPointerOver={(e) => {
+                    e.stopPropagation()
+                    hovered.setObjectId(trajectory.id)
+                }}
+                onPointerOut={(e) => {
+                    e.stopPropagation()
+                    hovered.setObjectId(null)
+                }}
+                onClick={(e) => {
+                    e.stopPropagation()
+                    hovered.setObjectId(trajectory.id)
+                }}
                 className='trajectory-label'
                 style={{
                     color: trajectory.color,
-                    opacity: hoveredToThis ? 1 : 0.8,
-                    transform: hoveredToThis ? 'translate(7px, -50%)' : 'translate(10px, -50%)',
+                    opacity: highlight ? 1 : 0.8,
+                    transform: highlight ? 'translate(7px, -50%)' : 'translate(10px, -50%)',
                 }}
             >{trajectory.name}</Html>
-            <sphereGeometry args={[hoveredToThis ? .5 : .4, 32, 32]} />
+            <sphereGeometry args={[highlight ? .5 : .4, 32, 32]} />
             <meshBasicMaterial color={trajectory.color} opacity={0} />
         </mesh>
 
         {/* trajectory line */}
         <Line
-            lineWidth={hoveredToThis ? 1.5 : 1}
+            lineWidth={highlight ? 1.5 : 1}
             points={trajectory.points}
             color={trajectory.color}
-            opacity={hoveredToThis ? 0.5 : 1}
+            opacity={highlight ? 0.5 : 1}
         />
     </>
 })
