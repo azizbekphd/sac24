@@ -6,6 +6,7 @@
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
     z-index: 10;
+    backdrop-filter: blur(2px);
 }
 
 .side-menu-wrapper.show {
@@ -27,7 +28,7 @@
 }
 
 .side-menu > *:last-child {
-    margin-bottom: 1rem;
+    margin-bottom: 1em;
 }
 
 .side-menu-toggler {

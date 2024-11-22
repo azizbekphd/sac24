@@ -29,6 +29,7 @@ class Trajectory {
         sLR?: number,
     }
     kind: string;
+    sourceJSON: string;
 
     constructor(
         id: string,
@@ -44,7 +45,8 @@ class Trajectory {
         type: TrajectoryType,
         color?: string,
         calculateOrbit: boolean = false,
-        kind: string = ''
+        kind: string = '',
+        sourceJSON: string = '{}'
     ){
         this.id = id
         this.name = name                                        // name the object
@@ -65,6 +67,7 @@ class Trajectory {
             this.cache.points = this.points
         }
         this.kind = kind
+        this.sourceJSON = sourceJSON
     }
 
     /**
@@ -73,14 +76,14 @@ class Trajectory {
      * @param uA The true anomaly.
      */
     propagate(uA: number): Coords {
-        let pos: Coords = [0, 0, 0];
-        let theta = uA;
-        let oI =  this.oI ;                      // Orbital Inclination
-        let aP = this.aP ;                       // Get the object's orbital elements.
-        let oE = this.oE;                        // Orbital eccentricity
-        let aN = this.aN ;                       // ascending Node
-        let sLR = this.cache.sLR!;               // Compute Semi-Latus Rectum.
-        let r = sLR/(1 + oE * Math.cos(theta));  // Compute radial distance.
+        const pos: Coords = [0, 0, 0];
+        const theta = uA;
+        const oI =  this.oI ;                      // Orbital Inclination
+        const aP = this.aP ;                       // Get the object's orbital elements.
+        const oE = this.oE;                        // Orbital eccentricity
+        const aN = this.aN ;                       // ascending Node
+        const sLR = this.cache.sLR!;               // Compute Semi-Latus Rectum.
+        const r = sLR/(1 + oE * Math.cos(theta));  // Compute radial distance.
 
         // Compute position coordinates pos[0] is x, pos[1] is y, pos[2] is z
         pos[0] = -r * (Math.cos(aP + theta) * Math.cos(aN) - Math.cos(oI) * Math.sin(aP + theta) * Math.sin(aN));
@@ -161,7 +164,8 @@ class TrajectoryUtils {
                     type,
                     object.color,
                     calculateOrbit,
-                    ''
+                    '',
+                    JSON.stringify(object)
                 );
             });
 

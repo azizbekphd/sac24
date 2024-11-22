@@ -21,6 +21,7 @@ class SmallBody {
     per_y: string;   // sidereal
     diameter: string;
     kind: string;
+    sourceJSON: string;
 
     constructor(args: any[]) {
         args = args.slice(2)
@@ -38,6 +39,7 @@ class SmallBody {
         this.per_y = args[11];
         this.diameter = args[12];
         this.kind = args[13];
+        this.sourceJSON = JSON.stringify(args[14])
     }
 
     static fromObject(obj: any): SmallBody {
@@ -46,7 +48,7 @@ class SmallBody {
             obj.spkid, obj.name, obj.full_name,
             obj.neo, obj.pha,
             obj.e, obj.w, obj.a, obj.ma, obj.i, obj.om,
-            obj.per_y, obj.diameter, obj.kind
+            obj.per_y, obj.diameter, obj.kind, obj
         ])
     }
 
@@ -71,7 +73,8 @@ class SmallBody {
             _type,
             this.kind.startsWith('c') ? 'lightblue' : 'grey',
             false,
-            this.kind
+            this.kind,
+            this.sourceJSON
         )
     }
 }
@@ -83,7 +86,10 @@ class NasaSmallBodyQueryApi {
         this.client = new SupabaseClient(config.supabase.url, config.supabase.key)
     }
 
-    async getSmallBodies(filters: FiltersContextType['filters'], attempt: number = 0): Promise<Trajectory[]> {
+    async getSmallBodies(filters: FiltersContextType['filters'] | undefined, attempt: number = 0): Promise<Trajectory[]> {
+        if (filters === undefined) {
+            return await this.getFirstValues()
+        }
         if (JSON.stringify(filters) === JSON.stringify(config.filters.default)) {
             return await this.getFirstValues()
         }

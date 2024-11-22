@@ -12,7 +12,7 @@ const FiltersMenu: React.FC = memo(() => {
 
     useEffect(() => {
         setFilters({...filters, query: debouncedQuery})
-    }, [debouncedQuery])
+    }, [filters, setFilters, debouncedQuery])
 
     return (
         <div className="filters">

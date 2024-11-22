@@ -1,0 +1,42 @@
+.data-table {
+    width: 100%;
+    max-height: 500px;
+    font-size: 0.8rem;
+}
+
+.data-table * {
+    cursor: pointer;
+}
+
+.data-table table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+    color: black;
+}
+
+.data-table table thead tr {
+    background-color: #ccc;
+}
+
+.data-table table tbody tr {
+    background-color: #fff;
+}
+
+.data-table table th,
+.data-table table td {
+    padding: 3px 5px;
+    text-align: left;
+    border: 1px solid #ccc;
+}
+.data-table table th:first-child,
+.data-table table td:first-child {
+    padding: 3px 5px;
+    text-align: right;
+    font-weight: bold;
+    border: 1px solid #ccc;
+}
+
+.data-table .row span {
+    font-size: 0.7rem;
+}

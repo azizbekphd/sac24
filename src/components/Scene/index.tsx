@@ -1,12 +1,12 @@
 import "./index.css"
 import { Canvas, extend } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
-import { useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { IfInSessionMode, XR } from "@react-three/xr";
 import { TrajectoriesContext, XRContext, TimeControlsContext, TrajectoriesContextType } from "../../contexts";
 import { PerspectiveCamera } from "three";
 import Orbit from "../Orbit";
-import { Skybox, SmallBodies, Sun } from "..";
+import { CameraController, Skybox, SmallBodies, Sun } from "..";
 import config from "../../globals/config.json";
 
 
@@ -17,12 +17,13 @@ enum ViewMode {
 
 extend({ OrbitControls });
 
+const normalCamera = new PerspectiveCamera();
+const xrCamera = new PerspectiveCamera();
+
 function Scene() {
     const objects = useContext<TrajectoriesContextType>(TrajectoriesContext);
     const xrStore = useContext(XRContext);
     const { timeControls } = useContext(TimeControlsContext);
-    const normalCamera = new PerspectiveCamera();
-    const xrCamera = new PerspectiveCamera();
     const [mode, setMode] = useState<ViewMode>(ViewMode.normal);
     const [camera, setCamera] = useState<PerspectiveCamera>(normalCamera);
     const orbitControlsRef = useRef(null!);
@@ -49,7 +50,7 @@ function Scene() {
         return () => {
             window.removeEventListener('resize', handleResize)
         }
-    }, [])
+    }, [xrStore])
 
     useEffect(() => {
         setCamera(mode === ViewMode.normal ? normalCamera : xrCamera)
@@ -69,10 +70,10 @@ function Scene() {
         return chunks
     }, [objects.smallBodies])
 
-    // const updateControls = useCallback(() => {
-    //     if (!orbitControlsRef.current) return;
-    //     orbitControlsRef.current.update()
-    // }, [camera])
+    const updateControls = useCallback(() => {
+        if (!orbitControlsRef.current) return;
+        orbitControlsRef.current.update()
+    }, [orbitControlsRef])
 
     return (
         <>
@@ -98,11 +99,11 @@ function Scene() {
                     <IfInSessionMode deny={['immersive-ar', 'immersive-vr']} >
                         <OrbitControls ref={orbitControlsRef}  enablePan={false} minDistance={1} maxDistance={400} camera={camera} />
                     </IfInSessionMode>
-                    {/*<CameraController
+                    <CameraController
                         camera={camera}
                         updateCallback={updateControls}
                         controls={orbitControlsRef.current}
-                        timestamp={timeControls.time} />*/}
+                        timestamp={timeControls.time} />
                 </XR>
                 {objects.planets ? <Skybox /> : <></>}
             </Canvas>

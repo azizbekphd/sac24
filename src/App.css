@@ -30,3 +30,13 @@
     color: white;
     background-color: green;
 }
+
+.back-button {
+    font-size: 2em;
+    color: white;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    outline: none;
+    padding: 1rem;
+}
