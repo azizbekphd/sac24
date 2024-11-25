@@ -145,7 +145,7 @@ const SmallBodies: React.FC<SmallBodyOrbits> = memo(({ trajectories, timestamp }
 
     return <>
         <points
-            onPointerOver={handlePointerOver}
+            onPointerMove={handlePointerOver}
             onPointerOut={handlePointerOut}
             onPointerDown={handleClick}
         >
