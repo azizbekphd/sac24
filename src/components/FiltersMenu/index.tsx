@@ -12,7 +12,7 @@ const FiltersMenu: React.FC = memo(() => {
 
     useEffect(() => {
         setFilters({...filters, query: debouncedQuery})
-    }, [filters, setFilters, debouncedQuery])
+    }, [debouncedQuery])
 
     return (
         <div className="filters">
@@ -30,7 +30,7 @@ const FiltersMenu: React.FC = memo(() => {
                     <select value={filters.group} onChange={
                             (e) => setFilters({
                                 ...filters,
-                                range: [0, filters.range[1]],
+                                page: 1,
                                 group: e.target.value as Filters['group']
                             })
                     }>
@@ -44,7 +44,7 @@ const FiltersMenu: React.FC = memo(() => {
                     <select value={filters.kind} onChange={
                             (e) => setFilters({
                                 ...filters,
-                                range: [0, filters.range[1]],
+                                page: 1,
                                 kind: e.target.value as Filters['kind']
                             })
                     }>
@@ -58,7 +58,7 @@ const FiltersMenu: React.FC = memo(() => {
                     <select value={filters.numberedState} onChange={
                             (e) => setFilters({
                                 ...filters,
-                                range: [0, filters.range[1]],
+                                page: 1,
                                 numberedState: e.target.value as Filters['numberedState']
                             })
                     }>
@@ -88,7 +88,7 @@ const FiltersMenu: React.FC = memo(() => {
                                     }
                                     setFilters({
                                         ...filters,
-                                        range: [0, filters.range[1]],
+                                        page: 1,
                                         asteroidClasses: ac
                                     })
                                 }}
@@ -121,7 +121,7 @@ const FiltersMenu: React.FC = memo(() => {
                                     }
                                     setFilters({
                                         ...filters,
-                                        range: [0, filters.range[1]],
+                                        page: 1,
                                         cometClasses: ac
                                     })
                                 }}

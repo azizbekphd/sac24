@@ -2,15 +2,24 @@ import { FocusContext } from '../../contexts'
 import { FiltersMenu, BodiesTable } from '../index'
 import SelectedBody from '../SelectedBody'
 import './index.css'
-import { useContext, useState } from "react"
+import { useContext, useEffect, useRef, useState } from "react"
 
 const SideMenu: React.FC = () => {
     const [show, setShow] = useState<boolean>(true)
     const { selected } = useContext(FocusContext)
+    const sideMenuRef = useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+        if (!selected.objectId) {
+            document.title = 'Orrery'
+        } else {
+            sideMenuRef.current?.scrollTo({top: 0, behavior: 'smooth'})
+        }
+    }, [selected.objectId])
 
     return (
         <div className={`side-menu-wrapper ${show ? 'show' : ''}`}>
-            <div className="side-menu">
+            <div className="side-menu" ref={sideMenuRef}>
             {selected.objectId ?
                 <SelectedBody />
                 :

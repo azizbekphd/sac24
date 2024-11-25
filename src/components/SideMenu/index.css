@@ -26,10 +26,13 @@
     overflow: auto;
     z-index: 10;
 }
-
-.side-menu > *:last-child {
-    margin-bottom: 1em;
+.side-menu > *:last-child::after {
+    content: '';
+    display: block;
+    height: 1rem;
+    flex-shrink: 0;
 }
+
 
 .side-menu-toggler {
     position: absolute;

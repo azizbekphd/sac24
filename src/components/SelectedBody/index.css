@@ -15,10 +15,6 @@
     color: black;
 }
 
-.data-table table thead tr {
-    background-color: #ccc;
-}
-
 .data-table table tbody tr {
     background-color: #fff;
 }
@@ -29,7 +25,10 @@
     text-align: left;
     border: 1px solid #ccc;
 }
-.data-table table th:first-child,
+.data-table table th {
+    font-size: 1.3em;
+    background-color: #ccc;
+}
 .data-table table td:first-child {
     padding: 3px 5px;
     text-align: right;

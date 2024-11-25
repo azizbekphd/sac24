@@ -1,48 +1,42 @@
-import { useContext, memo, useEffect, useState } from 'react';
+import { useContext, memo, useCallback } from 'react';
 import { TrajectoriesContext, FiltersContext, FocusContext } from '../../contexts';
 import './index.css'
-import config from '../../globals/config.json'
+
 
 const BodiesTable: React.FC = memo(() => {
     const { smallBodies } = useContext(TrajectoriesContext)
     const { filters, setFilters } = useContext(FiltersContext)
     const { hovered, selected } = useContext(FocusContext)
 
-    const [page, setPage] = useState(0); // Start from page 0
-    const [pageSize, setPageSize] = useState(config.filters.default.range[1]);
-
-    useEffect(() => {
-        const start = page * pageSize;
-        const end = start + pageSize - 1;
+    const handlePageChange = useCallback((newPage: number) => {
+        if (newPage < 0) return;
         setFilters({
             ...filters,
-            range: [start, end]
+            page: newPage
         })
-    }, [page, pageSize]);
+    }, [filters, setFilters])
 
-    const handlePageChange = (newPage: number) => {
-        if (newPage < 0) return;
-        setPage(newPage);
-    };
-
-    const handlePageSizeChange = (newPageSize: number) => {
-        setPageSize(newPageSize);
-    };
+    const handlePageSizeChange = useCallback((newPageSize: number) => {
+        setFilters({
+            ...filters,
+            pageSize: newPageSize
+        })
+    }, [filters, setFilters])
 
     return (
         <div className="bodies-table">
             <div className="row">
                 <button
-                    onClick={() => handlePageChange(page - 1)}
-                    disabled={page === 0}
+                    onClick={() => handlePageChange(filters.page - 1)}
+                    disabled={filters.page === 1}
                 >
                     {"<"}
                 </button>
-                <span>Page: {page + 1}</span>
+                <span>Page: {filters.page}</span>
                 <span>|</span>
                 <span>Page size:</span>
                 <select
-                    value={pageSize}
+                    value={filters.pageSize}
                     onChange={(e) => handlePageSizeChange(parseInt(e.target.value))}
                 >
                     <option value="10">10</option>
@@ -50,8 +44,8 @@ const BodiesTable: React.FC = memo(() => {
                     <option value="1000">1000</option>
                 </select>
                 <button
-                    onClick={() => handlePageChange(page + 1)}
-                    disabled={filters.range[1] - filters.range[0] + 1 < pageSize}
+                    onClick={() => handlePageChange(filters.page + 1)}
+                    disabled={false && filters.pageSize > smallBodies.length}
                 >{">"}</button>
             </div>
             <table>

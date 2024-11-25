@@ -86,10 +86,7 @@ class NasaSmallBodyQueryApi {
         this.client = new SupabaseClient(config.supabase.url, config.supabase.key)
     }
 
-    async getSmallBodies(filters: FiltersContextType['filters'] | undefined, attempt: number = 0): Promise<Trajectory[]> {
-        if (filters === undefined) {
-            return await this.getFirstValues()
-        }
+    async getSmallBodies(filters: FiltersContextType['filters'], attempt: number = 0): Promise<Trajectory[]> {
         if (JSON.stringify(filters) === JSON.stringify(config.filters.default)) {
             return await this.getFirstValues()
         }
@@ -113,7 +110,9 @@ class NasaSmallBodyQueryApi {
         }
         const { data, error } = await request
             .order(filters.order, {ascending: filters.ascending, nullsFirst: false})
-            .range(filters.range[0], filters.range[1])
+            .range(
+                (filters.page - 1) * filters.pageSize,
+                filters.page * filters.pageSize)
         if (error) {
             console.log(error)
             if (attempt < 5) {

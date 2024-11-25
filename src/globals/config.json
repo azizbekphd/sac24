@@ -111,7 +111,8 @@
         "default": {
             "order": "diameter",
             "ascending": false,
-            "range": [0, 100],
+            "page": 1,
+            "pageSize": 100,
             "query": "",
             "group": "all",
             "kind": "all",

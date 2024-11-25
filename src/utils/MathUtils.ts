@@ -38,12 +38,6 @@ class MathUtils {
             E = E_next;
             counter++;
         }
-        if (counter >= 100 && (isNaN(M) || isNaN(e))) {
-            console.warn("Failed to converge to Kepler's equation.");
-            console.log("M:", M);
-            console.log("e:", e);
-            console.log("E:", E);
-        }
         return E;
     }
 

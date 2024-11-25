@@ -1,6 +1,6 @@
 import { FocusContext, TrajectoriesContext } from '../../contexts'
 import { PropertyFormatter } from '../../utils'
-import { useCallback, useContext, useMemo } from "react"
+import { useCallback, useContext, useEffect, useMemo } from "react"
 import "./index.css"
 
 
@@ -10,7 +10,6 @@ const SelectedBody: React.FC = () => {
     const selectedObject = useMemo(() => {
         const objects = [...planets, ...smallBodies]
         const object = objects.find(obj => obj.id === selected.objectId)
-        console.log(object)
         if (!(object && object.sourceJSON)) {
             return object
         }
@@ -21,8 +20,14 @@ const SelectedBody: React.FC = () => {
         selected.setObjectId(null)
     }, [selected])
 
+    useEffect(() => {
+        if (selected.objectId) {
+            document.title = `${selectedObject?.name} - Orrery`
+        }
+    }, [selected.objectId, selectedObject])
+
     return (
-        <div className="selected-body">
+        <>
             <div className="row">
                 <button onClick={closeHandler} className='back-button'>{"<"}</button>
                 <h3>{selectedObject?.name}</h3>
@@ -30,6 +35,9 @@ const SelectedBody: React.FC = () => {
             <div className="data-table">
                 <table>
                     <tbody>
+                        <tr className="header">
+                            <th colSpan={2}>General</th>
+                        </tr>
                         <tr>
                             <td>Full name</td>
                             <td>{
@@ -68,16 +76,52 @@ const SelectedBody: React.FC = () => {
                                 PropertyFormatter.formatBoolean(selectedObject?.pha)
                             }</td>
                         </tr>
-                        <tr>
-                            <td>Epoch of osculation</td>
-                            <td>{
-                                PropertyFormatter.format(selectedObject?.epoch_cal)
-                            }</td>
+                        <tr className="header">
+                            <th colSpan={2}>Physical Characteristics</th>
                         </tr>
                         <tr>
                             <td>Diameter</td>
                             <td>{
                                 PropertyFormatter.formatNumber(selectedObject?.diameter, 'km')
+                            }</td>
+                        </tr>
+                        <tr>
+                            <td>Rotation period</td>
+                            <td>{
+                                PropertyFormatter.formatNumber(selectedObject?.rot_per, 'h')
+                            }</td>
+                        </tr>
+                        <tr>
+                            <td>Geometric albedo</td>
+                            <td>{
+                                PropertyFormatter.formatNumber(selectedObject?.albedo)
+                            }</td>
+                        </tr>
+                        <tr>
+                            <td>Object bi/tri-axial ellipsoid dimensions</td>
+                            <td>{
+                                PropertyFormatter.format(selectedObject?.extent)
+                            }</td>
+                        </tr>
+                        <tr>
+                            <td>Spectral taxonomic type (SMASSII)</td>
+                            <td>{
+                                PropertyFormatter.format(selectedObject?.spec_B)
+                            }</td>
+                        </tr>
+                        <tr>
+                            <td>Spectral taxonomic type (Tholen)</td>
+                            <td>{
+                                PropertyFormatter.format(selectedObject?.spec_T)
+                            }</td>
+                        </tr>
+                        <tr className="header">
+                            <th colSpan={2}>Orbital Parameters</th>
+                        </tr>
+                        <tr>
+                            <td>Orbital period</td>
+                            <td>{
+                                PropertyFormatter.formatNumber(selectedObject?.per_y, 'y')
                             }</td>
                         </tr>
                         <tr>
@@ -128,6 +172,9 @@ const SelectedBody: React.FC = () => {
                                 PropertyFormatter.formatNumber(selectedObject?.ad, 'au')
                             }</td>
                         </tr>
+                        <tr className="header">
+                            <th colSpan={2}>Additional Orbital Metrics</th>
+                        </tr>
                         <tr>
                             <td>Jupiter Tisserand Invariant</td>
                             <td>{
@@ -147,15 +194,24 @@ const SelectedBody: React.FC = () => {
                             }</td>
                         </tr>
                         <tr>
+                            <td>Mean motion</td>
+                            <td>{
+                                PropertyFormatter.formatNumber(selectedObject?.n, 'deg/d')
+                            }</td>
+                        </tr>
+                        <tr className="header">
+                            <th colSpan={2}>Observational Details</th>
+                        </tr>
+                        <tr>
                             <td>Time of perihelion passage</td>
                             <td>{
                                 PropertyFormatter.format(selectedObject?.tp_cal)
                             }</td>
                         </tr>
                         <tr>
-                            <td>Mean motion</td>
+                            <td>Epoch of osculation</td>
                             <td>{
-                                PropertyFormatter.formatNumber(selectedObject?.n, 'deg/d')
+                                PropertyFormatter.format(selectedObject?.epoch_cal)
                             }</td>
                         </tr>
                         <tr>
@@ -182,40 +238,10 @@ const SelectedBody: React.FC = () => {
                                 PropertyFormatter.format(selectedObject?.last_obs)
                             }</td>
                         </tr>
-                        <tr>
-                            <td>Object bi/tri-axial ellipsoid dimensions</td>
-                            <td>{
-                                PropertyFormatter.format(selectedObject?.extent)
-                            }</td>
-                        </tr>
-                        <tr>
-                            <td>Rotation period</td>
-                            <td>{
-                                PropertyFormatter.formatNumber(selectedObject?.rot_per, 'h')
-                            }</td>
-                        </tr>
-                        <tr>
-                            <td>Geometric albedo</td>
-                            <td>{
-                                PropertyFormatter.formatNumber(selectedObject?.albedo)
-                            }</td>
-                        </tr>
-                        <tr>
-                            <td>Spectral taxonomic type (SMASSII)</td>
-                            <td>{
-                                PropertyFormatter.format(selectedObject?.spec_B)
-                            }</td>
-                        </tr>
-                        <tr>
-                            <td>Spectral taxonomic type (Tholen)</td>
-                            <td>{
-                                PropertyFormatter.format(selectedObject?.spec_T)
-                            }</td>
-                        </tr>
                     </tbody>
                 </table>
             </div>
-        </div>
+        </>
     )
 }
 
