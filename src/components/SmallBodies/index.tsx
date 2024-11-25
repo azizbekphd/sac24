@@ -21,9 +21,14 @@ const SmallBodies: React.FC<SmallBodyOrbits> = memo(({ trajectories, timestamp }
     const { hovered, selected } = useContext(FocusContext);
     const hoveredLabelRef = useRef<THREE.Mesh>(null!)
     const selectedLabelRef = useRef<THREE.Mesh>(null!)
+    const drawableTrajectories = useMemo(() => {
+        return trajectories.filter(t => {
+            return !isNaN(t.oE) && !isNaN(t.epochMeanAnomaly) && !isNaN(t.period)
+        })
+    }, [trajectories])
 
     const calculateColors = useCallback(() => {
-        const colors = new Float32Array(trajectories.map(t => {
+        const colors = new Float32Array(drawableTrajectories.map(t => {
             let colorCode = config.smallBodies.asteroidColor
             if (t.type === TrajectoryType.PHA) {
                 colorCode = config.smallBodies.phaColor
@@ -33,24 +38,24 @@ const SmallBodies: React.FC<SmallBodyOrbits> = memo(({ trajectories, timestamp }
             return colorCode
         }).flat())
         return colors
-    }, [trajectories])
+    }, [drawableTrajectories])
 
     const calculateSizes = useCallback(() => {
-        const sizes = new Float32Array(trajectories.map(t => {
+        const sizes = new Float32Array(drawableTrajectories.map(t => {
             const diameter = t.id === hovered.objectId ? 10 : t.diameter
             return Math.max(Math.min(
                 diameter / 1000,
                 config.smallBodies.maxSize), config.smallBodies.minSize)
         }).flat())
         return sizes
-    }, [trajectories, hovered.objectId])
+    }, [drawableTrajectories, hovered.objectId])
 
     const calculatePositions = useCallback(() => {
-        const positions = new Float32Array(trajectories.map(t => {
+        const positions = new Float32Array(drawableTrajectories.map(t => {
             return t.propagateFromTime(timestamp)
         }).flat())
         return positions
-    }, [trajectories, timestamp])
+    }, [drawableTrajectories, timestamp])
 
     useEffect(() => {
         const colors = calculateColors()
@@ -58,7 +63,7 @@ const SmallBodies: React.FC<SmallBodyOrbits> = memo(({ trajectories, timestamp }
         const sizes = calculateSizes()
         sizeRef.current.array = sizes
         sizeRef.current.needsUpdate = true
-    }, [trajectories, hovered.objectId])
+    }, [drawableTrajectories, hovered.objectId, calculateSizes, calculateColors])
 
     useFrame(() => {
         const positions = calculatePositions()
@@ -70,16 +75,19 @@ const SmallBodies: React.FC<SmallBodyOrbits> = memo(({ trajectories, timestamp }
         const colors = calculateColors()
         const sizes = calculateSizes()
         return { colors, sizes }
-    }, [trajectories])
+    }, [calculateColors, calculateSizes])
 
     const positions = useMemo(() => {
         return calculatePositions()
-    }, [trajectories, timestamp])
+    }, [calculatePositions])
 
     const getParamsById = useCallback((objectId: string) => {
-        const index = trajectories.findIndex(t => t.id === objectId)
+        const index = drawableTrajectories.findIndex(t => t.id === objectId)
         if (index === -1) return null
-        const trajectory = trajectories[index]
+        const trajectory = drawableTrajectories[index]
+        if (isNaN(trajectory.oE) || isNaN(trajectory.epochMeanAnomaly) || isNaN(trajectory.period)) {
+            return null
+        }
         const color = `#${new THREE.Color(...colors.slice(index * 3, index * 3 + 3).map(c => c * 255)).getHexString()}`
         const position = positions.slice(index * 3, index * 3 + 3)
         return {
@@ -88,25 +96,25 @@ const SmallBodies: React.FC<SmallBodyOrbits> = memo(({ trajectories, timestamp }
             position,
             color
         }
-    }, [trajectories])
+    }, [drawableTrajectories, colors, positions])
 
     const hoveredParams = useMemo(() => {
         return getParamsById(hovered.objectId)
-    }, [trajectories, hovered.objectId])
+    }, [hovered.objectId, getParamsById])
 
     const selectedParams = useMemo(() => {
         return getParamsById(selected.objectId)
-    }, [trajectories, selected.objectId])
+    }, [selected.objectId, getParamsById])
 
     useFrame(() => {
         if (hoveredLabelRef.current) {
-            const index = trajectories.findIndex(t => t.id === hovered.objectId)
+            const index = drawableTrajectories.findIndex(t => t.id === hovered.objectId)
             const position = new THREE.Vector3(...positions.slice(index * 3, index * 3 + 3))
             hoveredLabelRef.current.position.set(position.x, position.y, position.z)
         }
 
         if (selectedLabelRef.current) {
-            const index = trajectories.findIndex(t => t.id === selected.objectId)
+            const index = drawableTrajectories.findIndex(t => t.id === selected.objectId)
             const position = new THREE.Vector3(...positions.slice(index * 3, index * 3 + 3))
             selectedLabelRef.current.position.set(position.x, position.y, position.z)
         }
@@ -116,13 +124,13 @@ const SmallBodies: React.FC<SmallBodyOrbits> = memo(({ trajectories, timestamp }
         e.stopPropagation()
         const index = e.intersections.sort((a, b) => a.distanceToRay! - b.distanceToRay!)[0].index!
         if (index === -1) return false
-        hovered.setObjectId(trajectories[index].id)
-    }, [trajectories])
+        hovered.setObjectId(drawableTrajectories[index].id)
+    }, [drawableTrajectories, hovered])
 
     const handlePointerOut = useCallback((e: any) => {
         e.stopPropagation()
         hovered.setObjectId(null)
-    }, [])
+    }, [hovered])
 
     const handleClick = useCallback((e: ThreeEvent<PointerEvent>) => {
         e.stopPropagation()
@@ -132,12 +140,12 @@ const SmallBodies: React.FC<SmallBodyOrbits> = memo(({ trajectories, timestamp }
         }
         const index = e.intersections.sort((a, b) => a.distanceToRay! - b.distanceToRay!)[0].index!
         if (index === -1) return false
-        selected.setObjectId(trajectories[index].id)
-    }, [trajectories, hovered.objectId])
+        selected.setObjectId(drawableTrajectories[index].id)
+    }, [drawableTrajectories, hovered.objectId, selected])
 
     return <>
         <points
-            onPointerOver={handlePointerOver}
+            onPointerMove={handlePointerOver}
             onPointerOut={handlePointerOut}
             onPointerDown={handleClick}
         >

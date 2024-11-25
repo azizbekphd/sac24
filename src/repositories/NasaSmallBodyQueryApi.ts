@@ -21,6 +21,7 @@ class SmallBody {
     per_y: string;   // sidereal
     diameter: string;
     kind: string;
+    sourceJSON: string;
 
     constructor(args: any[]) {
         args = args.slice(2)
@@ -38,6 +39,7 @@ class SmallBody {
         this.per_y = args[11];
         this.diameter = args[12];
         this.kind = args[13];
+        this.sourceJSON = JSON.stringify(args[14])
     }
 
     static fromObject(obj: any): SmallBody {
@@ -46,7 +48,7 @@ class SmallBody {
             obj.spkid, obj.name, obj.full_name,
             obj.neo, obj.pha,
             obj.e, obj.w, obj.a, obj.ma, obj.i, obj.om,
-            obj.per_y, obj.diameter, obj.kind
+            obj.per_y, obj.diameter, obj.kind, obj
         ])
     }
 
@@ -71,7 +73,8 @@ class SmallBody {
             _type,
             this.kind.startsWith('c') ? 'lightblue' : 'grey',
             false,
-            this.kind
+            this.kind,
+            this.sourceJSON
         )
     }
 }
@@ -107,7 +110,9 @@ class NasaSmallBodyQueryApi {
         }
         const { data, error } = await request
             .order(filters.order, {ascending: filters.ascending, nullsFirst: false})
-            .range(filters.range[0], filters.range[1])
+            .range(
+                (filters.page - 1) * filters.pageSize,
+                filters.page * filters.pageSize)
         if (error) {
             console.log(error)
             if (attempt < 5) {

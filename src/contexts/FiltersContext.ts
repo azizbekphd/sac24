@@ -4,7 +4,8 @@ import config from '../globals/config.json';
 class Filters {
     order: 'name' | 'diameter';
     ascending: boolean;
-    range: [number, number];
+    page: number;
+    pageSize: number;
     query: string;
     group: 'all' | 'neo' | 'pha';
     kind: 'all' | 'asteroids' | 'comets';
@@ -15,7 +16,8 @@ class Filters {
     constructor(args: any) {
         this.order = args.order;
         this.ascending = args.ascending;
-        this.range = args.range;
+        this.page = args.page;
+        this.pageSize = args.pageSize;
         this.query = args.query;
         this.group = args.group;
         this.kind = args.kind;

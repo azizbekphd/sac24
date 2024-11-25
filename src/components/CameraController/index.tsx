@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import * as TWEEN from '@tweenjs/tween.js'
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import { useContext, useEffect, useMemo } from "react";
 import { FocusContext, TrajectoriesContext } from "../../contexts";
 import { OrbitControls } from 'three/examples/jsm/Addons.js';
@@ -18,6 +18,7 @@ const CameraController: React.FC<CameraControllerProps> = ({
 }) => {
     const { selected } = useContext(FocusContext)
     const objects = useContext(TrajectoriesContext)
+    const viewport = useThree((state) => state.viewport)
 
     const selectedObject = useMemo(() => {
         return objects.smallBodies.find(obj => obj.id === selected.objectId)
@@ -32,35 +33,40 @@ const CameraController: React.FC<CameraControllerProps> = ({
     }, [selectedObject, timestamp])
 
     useEffect(() => {
-        const startPosition = camera.position.clone();
-        const startTarget = controls.target.clone();
+        camera.aspect = viewport.width / viewport.height;
+        camera.updateProjectionMatrix();
+    }, [camera, viewport])
 
-        const targetDistance = 10;
+    // useEffect(() => {
+    //     const startPosition = camera.position.clone();
+    //     const startTarget = controls.target.clone();
 
-        const direction = new THREE.Vector3().subVectors(camera.position, targetPosition).normalize();
-        const newCameraPosition = targetPosition.clone().add(direction.multiplyScalar(targetDistance));
+    //     const targetDistance = 10;
 
-        new TWEEN.Tween(startPosition)
-            .to(newCameraPosition, 1000)
-            .easing(TWEEN.Easing.Quadratic.InOut)
-            .onUpdate(() => {
-                camera.position.copy(startPosition);
-                controls.update();
-            })
-            .start();
+    //     const direction = new THREE.Vector3().subVectors(camera.position, targetPosition).normalize();
+    //     const newCameraPosition = targetPosition.clone().add(direction.multiplyScalar(targetDistance));
 
-        new TWEEN.Tween(startTarget)
-            .to(targetPosition, 1000)
-            .easing(TWEEN.Easing.Quadratic.InOut)
-            .onUpdate(() => {
-                controls.target.copy(startTarget);
-                controls.update();
-            })
-            .start();
-    }, [camera, controls, targetPosition])
+    //     new TWEEN.Tween(startPosition)
+    //         .to(newCameraPosition, 1000)
+    //         .easing(TWEEN.Easing.Quadratic.InOut)
+    //         .onUpdate(() => {
+    //             camera.position.copy(startPosition);
+    //             controls.update();
+    //         })
+    //         .start();
+
+    //     new TWEEN.Tween(startTarget)
+    //         .to(targetPosition, 1000)
+    //         .easing(TWEEN.Easing.Quadratic.InOut)
+    //         .onUpdate(() => {
+    //             controls.target.copy(startTarget);
+    //             controls.update();
+    //         })
+    //         .start();
+    // }, [camera, controls, targetPosition])
 
     useFrame(() => {
-        controls.update()
+        controls?.update()
         TWEEN.update()
         updateCallback()
     })

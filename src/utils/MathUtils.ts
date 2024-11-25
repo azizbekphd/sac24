@@ -30,11 +30,13 @@ class MathUtils {
     static solveKeplersEquation(M: number, e: number): number {
         let E = M; // Initial guess
         const tolerance = 1e-6; // Convergence tolerance
+        let counter = 0;
 
         while (true) {
             const E_next = E + (M - (E - e * Math.sin(E))) / (1 - e * Math.cos(E));
-            if (Math.abs(E_next - E) < tolerance) break;
+            if (Math.abs(E_next - E) < tolerance || counter >= 100) break;
             E = E_next;
+            counter++;
         }
         return E;
     }
