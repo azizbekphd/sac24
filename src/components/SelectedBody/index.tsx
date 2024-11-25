@@ -318,7 +318,12 @@ const SelectedBody: React.FC = () => {
 
     useEffect(() => {
         if (selected.objectId) {
-            document.title = `${selectedObject?.name} - Orrery`
+            const name = selectedObject?.name ?? selectedObject?.full_name
+            if (name) {
+                document.title = `${name} - Orrery`
+            } else {
+                document.title = 'Orrery'
+            }
         }
     }, [selected.objectId, selectedObject])
 
