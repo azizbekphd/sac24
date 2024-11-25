@@ -45,7 +45,7 @@ const BodiesTable: React.FC = memo(() => {
                 </select>
                 <button
                     onClick={() => handlePageChange(filters.page + 1)}
-                    disabled={false && filters.pageSize > smallBodies.length}
+                    disabled={filters.pageSize > smallBodies.length}
                 >{">"}</button>
             </div>
             <table>
