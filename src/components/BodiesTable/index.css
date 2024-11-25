@@ -28,6 +28,7 @@
     padding: 8px;
     text-align: left;
     border: 1px solid #ccc;
+    vertical-align: top;
 }
 
 .bodies-table .row span {

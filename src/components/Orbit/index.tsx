@@ -34,7 +34,7 @@ const Orbit: React.FC<OrbitProps> = memo(({ trajectory, timestamp }) =>{
             ref={constantSizeRef}
             onPointerOver={() => hovered.setObjectId(trajectory.id)}
             onPointerOut={() => hovered.setObjectId(null)}
-            onPointerDown={() => hovered.setObjectId(trajectory.id)}
+            onPointerDown={() => selected.setObjectId(trajectory.id)}
         >
             <Html
                 onPointerOver={(e) => {

@@ -3,6 +3,10 @@ import { useContext, memo } from 'react'
 import { TimeControlsContext } from '../../contexts'
 import config from '../../globals/config.json'
 
+
+const timeStepsNumber = (config.timeControls.timeDeltas.length - 1) / 2
+
+
 const TimeControls: React.FC = memo(() => {
     const { timeControls, setTimeControls } = useContext(TimeControlsContext)
 
@@ -24,14 +28,14 @@ const TimeControls: React.FC = memo(() => {
                     Live
                 </button>
                 <input type="range"
-                    min={-10}
-                    max={10}
+                    min={-timeStepsNumber}
+                    max={timeStepsNumber}
                     step={1} value={timeControls.deltaIndex}
                     className={`time-delta-slider ${
                         !timeControls.live ? (timeControls.deltaIndex === 0 ?
                             'paused' : '') : 'live'}`}
                     onChange={(e) => {
-                        const newDelta = config.timeControls.timeDeltas[parseInt(e.target.value) + 10]
+                        const newDelta = config.timeControls.timeDeltas[parseInt(e.target.value) + timeStepsNumber]
                         setTimeControls({
                             ...timeControls,
                             live: false,
@@ -40,7 +44,7 @@ const TimeControls: React.FC = memo(() => {
                         })
                     }} />
                 <div style={{width: '60px'}}>
-                    {timeControls.live ? '' : config.timeControls.timeDeltas[timeControls.deltaIndex + 10].label}
+                    {timeControls.live ? '' : config.timeControls.timeDeltas[timeControls.deltaIndex + timeStepsNumber].label}
                 </div>
             </div>
 

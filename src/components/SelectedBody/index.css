@@ -24,6 +24,7 @@
     padding: 3px 5px;
     text-align: left;
     border: 1px solid #ccc;
+    vertical-align: top;
 }
 .data-table table th {
     font-size: 1.3em;

@@ -30,6 +30,7 @@ class Trajectory {
     }
     kind: string;
     sourceJSON: string;
+    description: string;
 
     constructor(
         id: string,
@@ -46,7 +47,8 @@ class Trajectory {
         color?: string,
         calculateOrbit: boolean = false,
         kind: string = '',
-        sourceJSON: string = '{}'
+        sourceJSON: string = '{}',
+        description: string = ''
     ){
         this.id = id
         this.name = name                                        // name the object
@@ -68,6 +70,7 @@ class Trajectory {
         }
         this.kind = kind
         this.sourceJSON = sourceJSON
+        this.description = description
     }
 
     /**

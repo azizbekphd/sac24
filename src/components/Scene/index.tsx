@@ -3,7 +3,7 @@ import { Canvas, extend } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { IfInSessionMode, XR } from "@react-three/xr";
-import { TrajectoriesContext, XRContext, TimeControlsContext, TrajectoriesContextType } from "../../contexts";
+import { TrajectoriesContext, XRContext, TimeControlsContext, TrajectoriesContextType, FocusContext } from "../../contexts";
 import { PerspectiveCamera } from "three";
 import Orbit from "../Orbit";
 import { CameraController, Skybox, SmallBodies, Sun } from "..";
@@ -27,6 +27,7 @@ function Scene() {
     const [mode, setMode] = useState<ViewMode>(ViewMode.normal);
     const [camera, setCamera] = useState<PerspectiveCamera>(normalCamera);
     const orbitControlsRef = useRef(null!);
+    const { hovered, selected } = useContext(FocusContext);
 
     useEffect(() => {
         xrStore.subscribe((state, prevState) => {
@@ -72,8 +73,15 @@ function Scene() {
 
     const updateControls = useCallback(() => {
         if (!orbitControlsRef.current) return;
-        orbitControlsRef.current.update()
+        // orbitControlsRef.current.update()
     }, [orbitControlsRef])
+
+    const onPointerDown = useCallback(() => {
+        if (hovered.objectId) {
+            selected.setObjectId(hovered.objectId)
+        }
+    }, [hovered.objectId, selected])
+
 
     return (
         <>
@@ -81,6 +89,7 @@ function Scene() {
                 style={{position: 'fixed', top: 0, left: 0}}
                 camera={camera}
                 dpr={window.devicePixelRatio}
+                onPointerDown={onPointerDown}
                 frameloop="demand">
                 <XR store={xrStore}>
                     <ambientLight intensity={Math.PI / 2} />
