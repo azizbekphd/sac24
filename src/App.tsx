@@ -12,7 +12,6 @@ import { nasaApi } from './globals/instances'
 
 
 const xrStore = createXRStore();
-const tick = 40;
 
 function App() {
     const memoizedXrStore = useMemo(() => xrStore, [xrStore])
@@ -65,10 +64,10 @@ function App() {
         } else {
             setTimeControls({
                 ...timeControls,
-                time: timeControls.time + (timeControls.deltaTime * tick)
+                time: timeControls.time + (timeControls.deltaTime * config.camera.tick)
             })
         }
-    }, tick)
+    }, config.camera.tick)
 
     return (<>
         <MultipleContextProvider contexts={[

@@ -45,7 +45,7 @@ const SmallBodies: React.FC<SmallBodyOrbits> = memo(({ trajectories, timestamp }
             const diameter = t.id === hovered.objectId ? 10 : t.diameter
             return Math.max(Math.min(
                 diameter / 1000,
-                config.smallBodies.maxSize), config.smallBodies.minSize)
+                config.smallBodies.maxSize), config.smallBodies.minSize) * 10
         }).flat())
         return sizes
     }, [drawableTrajectories, hovered.objectId])

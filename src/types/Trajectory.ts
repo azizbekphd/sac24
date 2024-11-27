@@ -115,8 +115,8 @@ class Trajectory {
         if (this.cache && this.cache.points) {
             return this.cache.points
         }
-        const _points = new Array(360).fill(0).map((_, i) => {
-            return this.propagate(MathUtils.degToRad(i));
+        const _points = new Array(3600).fill(0).map((_, i) => {
+            return this.propagate(MathUtils.degToRad(i / 10));
         });
         _points.push(_points[0]);
         return _points;

@@ -17,8 +17,8 @@ enum ViewMode {
 
 extend({ OrbitControls });
 
-const normalCamera = new PerspectiveCamera();
-const xrCamera = new PerspectiveCamera();
+const normalCamera = new PerspectiveCamera(50, 1, 0.001, 1000);
+const xrCamera = new PerspectiveCamera(50, 1, 0.001, 1000);
 
 function Scene() {
     const objects = useContext<TrajectoriesContextType>(TrajectoriesContext);
@@ -71,17 +71,11 @@ function Scene() {
         return chunks
     }, [objects.smallBodies])
 
-    const updateControls = useCallback(() => {
-        if (!orbitControlsRef.current) return;
-        // orbitControlsRef.current.update()
-    }, [orbitControlsRef])
-
     const onPointerDown = useCallback(() => {
         if (hovered.objectId) {
             selected.setObjectId(hovered.objectId)
         }
     }, [hovered.objectId, selected])
-
 
     return (
         <>
@@ -106,13 +100,9 @@ function Scene() {
                         trajectories={chunk}
                         timestamp={timeControls.time} />)}
                     <IfInSessionMode deny={['immersive-ar', 'immersive-vr']} >
-                        <OrbitControls ref={orbitControlsRef}  enablePan={false} minDistance={1} maxDistance={400} camera={camera} />
+                        <OrbitControls ref={orbitControlsRef}  enablePan={false} minDistance={0.1} maxDistance={400} camera={camera} />
                     </IfInSessionMode>
-                    <CameraController
-                        camera={camera}
-                        updateCallback={updateControls}
-                        controls={orbitControlsRef.current}
-                        timestamp={timeControls.time} />
+                    <CameraController camera={camera} orbitControlsRef={orbitControlsRef} />
                 </XR>
                 {objects.planets ? <Skybox /> : <></>}
             </Canvas>
