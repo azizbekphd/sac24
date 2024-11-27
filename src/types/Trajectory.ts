@@ -31,6 +31,7 @@ class Trajectory {
     kind: string;
     sourceJSON: string;
     description: string;
+    model: string;
 
     constructor(
         id: string,
@@ -48,7 +49,8 @@ class Trajectory {
         calculateOrbit: boolean = false,
         kind: string = '',
         sourceJSON: string = '{}',
-        description: string = ''
+        description: string = '',
+        model: string = ''
     ){
         this.id = id
         this.name = name                                        // name the object
@@ -71,6 +73,7 @@ class Trajectory {
         this.kind = kind
         this.sourceJSON = sourceJSON
         this.description = description
+        this.model = model
     }
 
     /**
@@ -137,7 +140,9 @@ type TrajectoryData = {
     mAe: number,
     sidereal: number,
     d: number,
-    color: string
+    color: string,
+    description: string,
+    model: string
 }
 
 
@@ -168,7 +173,9 @@ class TrajectoryUtils {
                     object.color,
                     calculateOrbit,
                     '',
-                    JSON.stringify(object)
+                    JSON.stringify(object),
+                    object.description,
+                    object.model
                 );
             });
 

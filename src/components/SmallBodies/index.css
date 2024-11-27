@@ -9,4 +9,9 @@
     background-color: rgba(0, 0, 0, 0.5);
     width: max-content;
     user-select: none;
+    opacity: 1,
+}
+
+.trajectory-label.hide {
+    opacity: 0;
 }

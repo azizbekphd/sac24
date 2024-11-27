@@ -29,7 +29,7 @@ class MathUtils {
         */
     static solveKeplersEquation(M: number, e: number): number {
         let E = M; // Initial guess
-        const tolerance = 1e-6; // Convergence tolerance
+        const tolerance = 1e-8; // Convergence tolerance
         let counter = 0;
 
         while (true) {

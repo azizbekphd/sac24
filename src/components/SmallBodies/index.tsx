@@ -2,11 +2,12 @@ import * as THREE from 'three'
 import React, { memo, useEffect, useRef, useCallback, useMemo, useContext } from 'react'
 import { Trajectory } from '../../types'
 import config from '../../globals/config.json'
-import { ThreeEvent, useFrame } from '@react-three/fiber';
+import { ThreeEvent, useFrame, useThree } from '@react-three/fiber';
 import { TrajectoryType } from '../../types/Trajectory';
 import { FocusContext } from '../../contexts';
 import { Html, Line } from '@react-three/drei';
 import './index.css'
+import Model from '../Model';
 
 interface SmallBodyOrbits {
     trajectories: Trajectory[];
@@ -26,6 +27,7 @@ const SmallBodies: React.FC<SmallBodyOrbits> = memo(({ trajectories, timestamp }
             return !isNaN(t.oE) && !isNaN(t.epochMeanAnomaly) && !isNaN(t.period)
         })
     }, [trajectories])
+    const { camera } = useThree()
 
     const calculateColors = useCallback(() => {
         const colors = new Float32Array(drawableTrajectories.map(t => {
@@ -94,7 +96,8 @@ const SmallBodies: React.FC<SmallBodyOrbits> = memo(({ trajectories, timestamp }
             name: trajectory.name,
             points: trajectory.points,
             position,
-            color
+            color,
+            model: undefined
         }
     }, [drawableTrajectories, colors, positions])
 
@@ -221,7 +224,6 @@ const SmallBodies: React.FC<SmallBodyOrbits> = memo(({ trajectories, timestamp }
             </mesh>
         }
 
-
         {/* trajectory line for selected object */}
         {selectedParams &&
             <Line
@@ -235,16 +237,27 @@ const SmallBodies: React.FC<SmallBodyOrbits> = memo(({ trajectories, timestamp }
         {selectedParams &&
             <mesh ref={selectedLabelRef} position={new THREE.Vector3(...selectedParams.position)}>
                 <Html
-                    className='trajectory-label'
+                    className={[
+                        'trajectory-label',
+                        camera.position.distanceTo(new THREE.Vector3(...selectedParams.position)) < 2 ? 'hide' : ''
+                    ].join(' ')}
                     style={{
                         fontSize: '13px',
                         color: selectedParams.color,
-                        opacity: 1,
                         zIndex: '6',
                         transform: 'translate(10px, -50%)',
                     }}
                 >{selectedParams.name}</Html>
             </mesh>
+        }
+
+        {selectedParams &&
+            <Model
+                source={selectedParams.model ?? config.smallBodies.defaultModel}
+                position={new THREE.Vector3(...selectedParams.position)}
+                color={selectedParams.model ? 'grey' : null}
+                scale={0.0003}
+            />
         }
     </>
 })

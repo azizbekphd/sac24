@@ -4,6 +4,7 @@ import { Trajectory } from '../../types'
 import { Html, Line } from '@react-three/drei';
 import { useThree } from '@react-three/fiber';
 import { FocusContext } from '../../contexts';
+import Model from '../Model';
 
 interface OrbitProps {
     trajectory: Trajectory;
@@ -29,6 +30,15 @@ const Orbit: React.FC<OrbitProps> = memo(({ trajectory, timestamp }) =>{
     }, [trajectory, hovered.objectId, selected.objectId])
 
     return <>
+        {/* planet model */}
+        {selected.objectId === trajectory.id &&
+            <Model
+                source={trajectory.model}
+                position={new THREE.Vector3(...trajectory.position)}
+                scale={1}
+            />
+        }
+
         {/* planet constant size mesh */}
         <mesh
             ref={constantSizeRef}

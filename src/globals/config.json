@@ -8,51 +8,51 @@
         },
         "timeDeltas": [
             {
-                "label": "-1y",
+                "label": "-1y/s",
                 "value": -31104000
             },
             {
-                "label": "-6m",
+                "label": "-6m/s",
                 "value": -15552000
             },
             {
-                "label": "-3m",
+                "label": "-3m/s",
                 "value": -7776000
             },
             {
-                "label": "-2m",
+                "label": "-2m/s",
                 "value": -5184000
             },
             {
-                "label": "-1m",
+                "label": "-1m/s",
                 "value": -2592000
             },
             {
-                "label": "-2w",
+                "label": "-2w/s",
                 "value": -1209600
             },
             {
-                "label": "-1w",
+                "label": "-1w/s",
                 "value": -604800
             },
             {
-                "label": "-1d",
+                "label": "-1d/s",
                 "value": -86400
             },
             {
-                "label": "-12h",
+                "label": "-12h/s",
                 "value": -43200
             },
             {
-                "label": "-6h",
+                "label": "-6h/s",
                 "value": -21600
             },
             {
-                "label": "-4h",
+                "label": "-4h/s",
                 "value": -14400
             },
             {
-                "label": "-2h",
+                "label": "-2h/s",
                 "value": -7200
             },
             {
@@ -60,51 +60,51 @@
                 "value": 0
             },
             {
-                "label": "2h",
+                "label": "2h/s",
                 "value": 7200
             },
             {
-                "label": "4h",
+                "label": "4h/s",
                 "value": 14400
             },
             {
-                "label": "6h",
+                "label": "6h/s",
                 "value": 21600
             },
             {
-                "label": "12h",
+                "label": "12h/s",
                 "value": 43200
             },
             {
-                "label": "1d",
+                "label": "1d/s",
                 "value": 86400
             },
             {
-                "label": "1w",
+                "label": "1w/s",
                 "value": 604800
             },
             {
-                "label": "2w",
+                "label": "2w/s",
                 "value": 1209600
             },
             {
-                "label": "1m",
+                "label": "1m/s",
                 "value": 2592000
             },
             {
-                "label": "2m",
+                "label": "2m/s",
                 "value": 5184000
             },
             {
-                "label": "3m",
+                "label": "3m/s",
                 "value": 7776000
             },
             {
-                "label": "6m",
+                "label": "6m/s",
                 "value": 15552000
             },
             {
-                "label": "1y",
+                "label": "1y/s",
                 "value": 31104000
             }
         ]
@@ -117,7 +117,8 @@
         "segments": 5,
         "phaColor": [1, 0, 0],
         "cometColor": [0, 0.7890625, 0.92578125],
-        "asteroidColor": [0.5859375, 0.5859375, 0.5859375]
+        "asteroidColor": [0.5859375, 0.5859375, 0.5859375],
+        "defaultModel": "./models/asteroid.obj"
     },
     "supabase": {
         "url": "https://krywglbrlhpjlqwmupon.supabase.co",

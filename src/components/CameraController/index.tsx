@@ -37,7 +37,7 @@ const CameraController: React.FC<CameraControllerProps> = ({
             .to({
                 target: {x: target.x, y: target.y, z: target.z},
                 position: {x: position.x, y: position.y, z: position.z}
-            }, 200)
+            }, 500)
             .easing(TWEEN.Easing.Quadratic.Out)
             .onUpdate(({target, position}) => {
                 camera.position.set(position.x, position.y, position.z)
@@ -46,7 +46,7 @@ const CameraController: React.FC<CameraControllerProps> = ({
             })
             .start()
         tweenGroup.current.add(tween)
-    }, [orbitControlsRef])
+    }, [orbitControlsRef, camera.position])
 
     const selectedObject = useMemo(() => {
         if (!selected.objectId) return
