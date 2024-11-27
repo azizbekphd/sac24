@@ -12,7 +12,7 @@ const TimeControls: React.FC = memo(() => {
 
     return (
             <div className="time-controls">
-                <input type="datetime-local" value={new Date(timeControls.time).toISOString().split('.')[0]} onChange={(e) => {
+                <input type="datetime-local" className="datetime" value={new Date(timeControls.time).toISOString().split('.')[0]} onChange={(e) => {
                     setTimeControls({
                         ...timeControls,
                         live: false,

@@ -419,5 +419,9 @@
                 "objectId": null
             }
         }
+    },
+    "camera": {
+        "offset": [0.1, 0.1, 0.1],
+        "tick": 40
     }
 }
