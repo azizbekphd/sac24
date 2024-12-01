@@ -5,8 +5,6 @@ import { Html, Line } from '@react-three/drei';
 import { useThree } from '@react-three/fiber';
 import { FocusContext, TimeControlsContext } from '../../contexts';
 import Model from '../Model';
-import config from '../../globals/config.json';
-import { SUN_DIAMETER } from '../../globals/constants';
 
 
 interface OrbitProps {
@@ -25,13 +23,14 @@ const Orbit: React.FC<OrbitProps> = memo(({ trajectory, timestamp }) =>{
     }, [trajectory, timestamp])
 
     useEffect(() => {
-        constantSizeRef.current.position.set(position[0], position[1], position[2])
         const distance = constantSizeRef.current.position.distanceTo(camera.position);
         const scaleFactor = distance * 0.01;
+        constantSizeRef.current.position.set(position[0], position[1], position[2])
         constantSizeRef.current.scale.set(scaleFactor, scaleFactor, scaleFactor);
     }, [
         camera.position, camera.scale, camera.zoom,
-        position, timeControls.deltaTime
+        position, timeControls.deltaTime,
+        trajectory.id, selected.objectId
     ])
 
     const highlight = useMemo(() => {
