@@ -24,14 +24,12 @@ const TimeControls: React.FC = memo(() => {
                         setTimeControls({
                             ...timeControls,
                             live: false,
-                            deltaIndex: 0,
-                            deltaTime: 0
+                            deltaIndex: 0, deltaTime: 0,
                         })
                     } else {
                         setTimeControls({
                             ...timeControls,
-                            time: new Date().getTime(),
-                            live: true,
+                            time: new Date().getTime(), live: true,
                             deltaIndex: 0, deltaTime: 1
                         })
                     }

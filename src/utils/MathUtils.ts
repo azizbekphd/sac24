@@ -1,4 +1,5 @@
 import { DIFF_BETWEEN_J2000_AND_EPOCH } from "../globals/constants";
+import { Coords } from "../types";
 
 class MathUtils {
     static lerp(start: number, end: number, numElements: number): number[] {
@@ -74,6 +75,20 @@ class MathUtils {
 
         return nu;
     }
+
+    /**
+     * Normalize a given 3D vector.
+     *
+     * @param v The vector to normalize.
+     * @returns The normalized vector.
+     */
+     static normalize(v: Coords): Coords {
+         const norm = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+         if (norm === 0) {
+             return [0, 0, 0];
+         }
+         return [v[0] / norm, v[1] / norm, v[2] / norm];
+     }
 }
 
 export default MathUtils;

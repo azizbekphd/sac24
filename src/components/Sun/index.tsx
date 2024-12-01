@@ -3,6 +3,8 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { useContext, useRef } from 'react';
 import { FakeGlowMaterial } from '../FakeGlowMaterial';
 import { FocusContext } from '../../contexts';
+import Model from '../Model';
+import config from '../../globals/config.json';
 
 
 function ConstantSizeSphere() {
@@ -36,6 +38,11 @@ function ConstantSizeSphere() {
           glowInternalRadius={5}
         />
       </mesh>
+      <Model
+        source="models/sun.glb"
+        position={new THREE.Vector3(0, 0, 0)}
+        scale={1}
+        />
     </>
   );
 }

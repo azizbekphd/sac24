@@ -57,9 +57,10 @@ function App() {
 
     useInterval(() => {
         if (timeControls.live) {
+            const now = new Date().getTime()
             setTimeControls({
                 ...timeControls,
-                time: new Date().getTime()
+                time: now
             })
         } else {
             setTimeControls({

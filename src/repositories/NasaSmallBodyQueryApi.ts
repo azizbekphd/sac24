@@ -22,6 +22,7 @@ class SmallBody {
     diameter: string;
     kind: string;
     sourceJSON: string;
+    model: string;
 
     constructor(args: any[]) {
         args = args.slice(2)
@@ -39,16 +40,16 @@ class SmallBody {
         this.per_y = args[11];
         this.diameter = args[12];
         this.kind = args[13];
-        this.sourceJSON = JSON.stringify(args[14])
+        this.model = args[14];
+        this.sourceJSON = JSON.stringify(args[15])
     }
 
     static fromObject(obj: any): SmallBody {
         return new SmallBody([
             null, null,
-            obj.spkid, obj.name, obj.full_name,
-            obj.neo, obj.pha,
+            obj.spkid, obj.name, obj.full_name, obj.neo, obj.pha,
             obj.e, obj.w, obj.a, obj.ma, obj.i, obj.om,
-            obj.per_y, obj.diameter, obj.kind, obj
+            obj.per_y, obj.diameter, obj.kind, obj.model, obj
         ])
     }
 
@@ -74,7 +75,9 @@ class SmallBody {
             this.kind.startsWith('c') ? 'lightblue' : 'grey',
             false,
             this.kind,
-            this.sourceJSON
+            this.sourceJSON,
+            '',
+            this.model
         )
     }
 }

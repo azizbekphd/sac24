@@ -17,8 +17,8 @@ enum ViewMode {
 
 extend({ OrbitControls });
 
-const normalCamera = new PerspectiveCamera(50, 1, 0.001, 1000);
-const xrCamera = new PerspectiveCamera(50, 1, 0.001, 1000);
+const normalCamera = new PerspectiveCamera(50, 1, 0.000001, 1000);
+const xrCamera = new PerspectiveCamera(50, 1, 0.000001, 1000);
 
 function Scene() {
     const objects = useContext<TrajectoriesContextType>(TrajectoriesContext);
@@ -100,13 +100,13 @@ function Scene() {
                         trajectories={chunk}
                         timestamp={timeControls.time} />)}
                     <IfInSessionMode deny={['immersive-ar', 'immersive-vr']} >
-                        <OrbitControls ref={orbitControlsRef}  enablePan={false} minDistance={0.2} maxDistance={400} camera={camera} />
+                        <OrbitControls ref={orbitControlsRef}  enablePan={false} maxDistance={400} camera={camera} />
                     </IfInSessionMode>
                     <CameraController camera={camera} orbitControlsRef={orbitControlsRef} />
+                    {objects.planets ? <Skybox /> : <></>}
                 </XR>
-                {objects.planets ? <Skybox /> : <></>}
             </Canvas>
-            {/*<button onClick={() => {xrStore.enterVR()}} className="enter-vr">Enter VR</button>*/}
+            <button onClick={() => {xrStore.enterVR()}} className="enter-vr">Enter VR</button>
         </>
     );
 }

@@ -9,6 +9,7 @@ import { Html, Line } from '@react-three/drei';
 import './index.css'
 import Model from '../Model';
 
+
 interface SmallBodyOrbits {
     trajectories: Trajectory[];
     timestamp: number;
@@ -97,7 +98,9 @@ const SmallBodies: React.FC<SmallBodyOrbits> = memo(({ trajectories, timestamp }
             points: trajectory.points,
             position,
             color,
-            model: undefined
+            model: trajectory.model ? `./models/asteroids/${trajectory.model}` : undefined,
+            diameter: trajectory.diameter,
+            scaleFactor: trajectory.scaleFactor
         }
     }, [drawableTrajectories, colors, positions])
 
@@ -123,14 +126,25 @@ const SmallBodies: React.FC<SmallBodyOrbits> = memo(({ trajectories, timestamp }
         }
     })
 
-    const handlePointerOver = useCallback((e: ThreeEvent<PointerEvent>) => {
-        e.stopPropagation()
-        const index = e.intersections.sort((a, b) => a.distanceToRay! - b.distanceToRay!)[0].index!
-        if (index === -1) return false
+    const handlePointerMove = useCallback((e: ThreeEvent<PointerEvent>) => {
+        const intersections = (e.intersections ?? [e.intersection] ?? [])
+            .filter(i => {
+                const ratio = i.distance / i.distanceToRay!
+                return ratio > 100
+            })
+            .sort((a, b) => a.distanceToRay! - b.distanceToRay!)
+        if (intersections.length === 0) {
+            if (drawableTrajectories.find(t => t.id === hovered.objectId)) {
+                hovered.setObjectId(null)
+            }
+            return false
+        }
+        const index = intersections[0].index!
+        if (index === -1 || !drawableTrajectories[index]) return false
         hovered.setObjectId(drawableTrajectories[index].id)
-    }, [drawableTrajectories, hovered])
+    }, [drawableTrajectories, hovered, selectedParams])
 
-    const handlePointerOut = useCallback((e: any) => {
+    const handlePointerOut = useCallback((e: ThreeEvent<PointerEvent>) => {
         e.stopPropagation()
         hovered.setObjectId(null)
     }, [hovered])
@@ -141,14 +155,15 @@ const SmallBodies: React.FC<SmallBodyOrbits> = memo(({ trajectories, timestamp }
             selected.setObjectId(hovered.objectId)
             return
         }
-        const index = e.intersections.sort((a, b) => a.distanceToRay! - b.distanceToRay!)[0].index!
+        const index = (e.intersections ?? [e.intersection] ?? [])
+            .sort((a, b) => a.distanceToRay! - b.distanceToRay!)[0].index!
         if (index === -1) return false
         selected.setObjectId(drawableTrajectories[index].id)
     }, [drawableTrajectories, hovered.objectId, selected])
 
     return <>
         <points
-            onPointerMove={handlePointerOver}
+            onPointerMove={handlePointerMove}
             onPointerOut={handlePointerOut}
             onPointerDown={handleClick}
         >
@@ -239,7 +254,8 @@ const SmallBodies: React.FC<SmallBodyOrbits> = memo(({ trajectories, timestamp }
                 <Html
                     className={[
                         'trajectory-label',
-                        camera.position.distanceTo(new THREE.Vector3(...selectedParams.position)) < 2 ? 'hide' : ''
+                        'highlight',
+                        camera.position.distanceTo(new THREE.Vector3(...selectedParams.position)) < selectedParams.scaleFactor * 5 ? 'hide' : ''
                     ].join(' ')}
                     style={{
                         fontSize: '13px',
@@ -256,7 +272,7 @@ const SmallBodies: React.FC<SmallBodyOrbits> = memo(({ trajectories, timestamp }
                 source={selectedParams.model ?? config.smallBodies.defaultModel}
                 position={new THREE.Vector3(...selectedParams.position)}
                 color={selectedParams.model ? 'grey' : null}
-                scale={0.0003}
+                scale={selectedParams.scaleFactor}
             />
         }
     </>

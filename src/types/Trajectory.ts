@@ -1,6 +1,7 @@
 import { MathUtils } from "../utils";
 import Coords from "./Coords";
-import { MILLISECONDS_IN_SIDEREAL_YEAR } from "../globals/constants";
+import { MILLISECONDS_IN_SIDEREAL_YEAR, SUN_DIAMETER } from "../globals/constants";
+import config from "../globals/config.json";
 
 
 enum TrajectoryType {
@@ -27,6 +28,7 @@ class Trajectory {
     cache: {
         points?: Coords[],
         sLR?: number,
+        scaleFactor?: number,
     }
     kind: string;
     sourceJSON: string;
@@ -118,11 +120,26 @@ class Trajectory {
         if (this.cache && this.cache.points) {
             return this.cache.points
         }
-        const _points = new Array(3600).fill(0).map((_, i) => {
-            return this.propagate(MathUtils.degToRad(i / 10));
+        const _points = new Array(36000).fill(0).map((_, i) => {
+            return this.propagate(MathUtils.degToRad(i / 100));
         });
         _points.push(_points[0]);
         return _points;
+    }
+
+    /**
+     * Getter for the trajectory's scale factor.
+     *
+     * @returns {number} The trajectory's scale factor.
+     */
+    get scaleFactor(): number {
+        if (this.cache && this.cache.scaleFactor) {
+            return this.cache.scaleFactor
+        }
+        const ratio = (this.diameter ?? 0) / SUN_DIAMETER;
+        const limitedRatio = Math.max(ratio, config.camera.minDistance);
+        this.cache.scaleFactor = limitedRatio;
+        return limitedRatio;
     }
 }
 
