@@ -80,7 +80,7 @@ class Trajectory {
         this.kind = kind
         this.sourceJSON = sourceJSON
         this.description = description
-        this.model = model ? (model.startsWith('http') ? model : `./models/asteroids/${model}`) : undefined
+        this.model = model ? (model.includes('/') ? model : `./models/asteroids/${model}`) : undefined
         this.rotationPeriod = rotationPeriod
     }
 
