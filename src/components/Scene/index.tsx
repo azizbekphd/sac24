@@ -103,8 +103,8 @@ function Scene() {
                         <OrbitControls ref={orbitControlsRef} enablePan={false} maxDistance={400} camera={camera} zoomSpeed={2} />
                     </IfInSessionMode>
                     <CameraController camera={camera} orbitControlsRef={orbitControlsRef} />
+                    <Sun />
                     <Suspense fallback={null}>
-                        <Sun />
                         <Skybox />
                     </Suspense>
                 </XR>
