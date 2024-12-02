@@ -98,7 +98,7 @@ const SmallBodies: React.FC<SmallBodyOrbits> = memo(({ trajectories, timestamp }
         return {
             name: trajectory.name,
             points: trajectory.points,
-            model: trajectory.model,
+            model: trajectory.model ? `./models/asteroids/${trajectory.model}` : undefined,
             diameter: trajectory.diameter,
             scaleFactor: trajectory.scaleFactor,
             position,
