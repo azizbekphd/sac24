@@ -7,6 +7,7 @@ import { OrbitControls } from 'three/examples/jsm/Addons.js';
 import { MathUtils } from '../../utils';
 import { Coords } from '../../types';
 import config from '../../globals/config.json';
+import { TrajectoryType } from '../../types/Trajectory';
 
 
 interface CameraControllerProps {
@@ -44,7 +45,7 @@ const CameraController: React.FC<CameraControllerProps> = ({
             .easing(TWEEN.Easing.Quadratic.Out)
             .onUpdate(({target, position}) => {
                 camera.position.set(position.x, position.y, position.z)
-                orbitControlsRef.current?.target.set(target.x, target.y, target.z)
+                orbitControlsRef.current?.target.set(target.x!, target.y!, target.z!)
                 orbitControlsRef.current?.update()
             })
             .start()
@@ -71,7 +72,7 @@ const CameraController: React.FC<CameraControllerProps> = ({
                 return
             }
             const minDistance = selectedObject.scaleFactor *
-                config.camera.scale * 5000
+                config.camera.scale * (selectedObject.type === TrajectoryType.Planet ? 3000 : 4000)
             orbitControlsRef.current.minDistance = minDistance
             const target = selectedObject.propagateFromTime(timeControls.time)
             const currentPosition = camera.position.clone()
