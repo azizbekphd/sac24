@@ -106,7 +106,7 @@ function Scene() {
                     {objects.planets ? <Skybox /> : <></>}
                 </XR>
             </Canvas>
-            <button onClick={() => {xrStore.enterVR()}} className="enter-vr">Enter VR</button>
+            {/*<button onClick={() => {xrStore.enterVR()}} className="enter-vr">Enter VR</button>*/}
         </>
     );
 }
