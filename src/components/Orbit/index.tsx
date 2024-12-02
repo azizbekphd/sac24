@@ -3,7 +3,9 @@ import React, { memo, useContext, useEffect, useMemo, useRef } from 'react'
 import { Trajectory } from '../../types'
 import { Html, Line } from '@react-three/drei';
 import { useThree } from '@react-three/fiber';
-import { FocusContext } from '../../contexts';
+import { FocusContext, TimeControlsContext } from '../../contexts';
+import Model from '../Model';
+
 
 interface OrbitProps {
     trajectory: Trajectory;
@@ -14,14 +16,22 @@ const Orbit: React.FC<OrbitProps> = memo(({ trajectory, timestamp }) =>{
     const constantSizeRef = useRef<THREE.Mesh>(null!)
     const { camera } = useThree()
     const { hovered, selected } = useContext(FocusContext);
+    const { timeControls } = useContext(TimeControlsContext)
+
+    const position = useMemo(() => {
+        return trajectory.propagateFromTime(timestamp)
+    }, [trajectory, timestamp])
 
     useEffect(() => {
-        const position = trajectory.propagateFromTime(timestamp)
-        constantSizeRef.current.position.set(position[0], position[1], position[2])
         const distance = constantSizeRef.current.position.distanceTo(camera.position);
         const scaleFactor = distance * 0.01;
+        constantSizeRef.current.position.set(position[0], position[1], position[2])
         constantSizeRef.current.scale.set(scaleFactor, scaleFactor, scaleFactor);
-    }, [timestamp])
+    }, [
+        camera.position, camera.scale, camera.zoom,
+        position, timeControls.deltaTime,
+        trajectory.id, selected.objectId
+    ])
 
     const highlight = useMemo(() => {
         return hovered.objectId === trajectory.id ||
@@ -29,15 +39,28 @@ const Orbit: React.FC<OrbitProps> = memo(({ trajectory, timestamp }) =>{
     }, [trajectory, hovered.objectId, selected.objectId])
 
     return <>
+        {/* planet model */}
+        {selected.objectId === trajectory.id &&
+            <Model
+                source={trajectory.model}
+                position={new THREE.Vector3(...position)}
+                scale={trajectory.scaleFactor}
+                rotation={trajectory.calculateRotation(timeControls.time)}
+            />
+        }
+
         {/* planet constant size mesh */}
         <mesh
             ref={constantSizeRef}
-            onPointerOver={() => hovered.setObjectId(trajectory.id)}
+            onPointerMove={(e) => {
+                e.stopPropagation()
+                hovered.setObjectId(trajectory.id)
+            }}
             onPointerOut={() => hovered.setObjectId(null)}
             onPointerDown={() => selected.setObjectId(trajectory.id)}
         >
             <Html
-                onPointerOver={(e) => {
+                onPointerMove={(e) => {
                     e.stopPropagation()
                     hovered.setObjectId(trajectory.id)
                 }}
@@ -49,10 +72,13 @@ const Orbit: React.FC<OrbitProps> = memo(({ trajectory, timestamp }) =>{
                     e.stopPropagation()
                     hovered.setObjectId(trajectory.id)
                 }}
-                className='trajectory-label'
+                className={[
+                    'trajectory-label',
+                    highlight ? 'highlight' : '',
+                    highlight && camera.position.distanceTo(new THREE.Vector3(...position)) < trajectory.scaleFactor * 5 ? 'hide' : ''
+                ].join(' ')}
                 style={{
                     color: trajectory.color,
-                    opacity: highlight ? 1 : 0.8,
                     transform: highlight ? 'translate(7px, -50%)' : 'translate(10px, -50%)',
                 }}
             >{trajectory.name}</Html>

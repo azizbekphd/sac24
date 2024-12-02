@@ -4,7 +4,10 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { useCallback, useContext, useEffect, useMemo, useRef } from "react";
 import { FocusContext, TimeControlsContext, TrajectoriesContext } from '../../contexts';
 import { OrbitControls } from 'three/examples/jsm/Addons.js';
-import config from '../../globals/config.json'
+import { MathUtils } from '../../utils';
+import { Coords } from '../../types';
+import config from '../../globals/config.json';
+import { TrajectoryType } from '../../types/Trajectory';
 
 
 interface CameraControllerProps {
@@ -20,6 +23,7 @@ const CameraController: React.FC<CameraControllerProps> = ({
     const { timeControls } = useContext(TimeControlsContext)
     const objects = useContext(TrajectoriesContext)
     const tweenGroup = useRef<TWEEN.Group>(new TWEEN.Group())
+    const currentGoal = useRef<Coords>([0, 0, 0])
 
     const moveCamera = useCallback((
             target: {x: number, y: number, z: number},
@@ -27,56 +31,69 @@ const CameraController: React.FC<CameraControllerProps> = ({
             immediate: boolean = false) => {
         if (immediate) {
             camera.position.set(position.x, position.y, position.z)
-            orbitControlsRef.current!.target.set(target.x, target.y, target.z)
-            orbitControlsRef.current!.update()
+            orbitControlsRef.current?.target.set(target.x, target.y, target.z)
+            orbitControlsRef.current?.update()
             return
         }
-        const currentTarget = orbitControlsRef.current!.target
+        const currentTarget = orbitControlsRef.current?.target
         const currentPosition = camera.position
         const tween = new TWEEN.Tween({target: {...currentTarget}, position: {...currentPosition}})
             .to({
                 target: {x: target.x, y: target.y, z: target.z},
                 position: {x: position.x, y: position.y, z: position.z}
-            }, 200)
+            }, 500)
             .easing(TWEEN.Easing.Quadratic.Out)
             .onUpdate(({target, position}) => {
                 camera.position.set(position.x, position.y, position.z)
-                orbitControlsRef.current!.target.set(target.x, target.y, target.z)
-                orbitControlsRef.current!.update()
+                orbitControlsRef.current?.target.set(target.x!, target.y!, target.z!)
+                orbitControlsRef.current?.update()
             })
             .start()
         tweenGroup.current.add(tween)
-    }, [orbitControlsRef])
+    }, [orbitControlsRef, camera.position])
 
     const selectedObject = useMemo(() => {
-        if (!selected.objectId) return
+        if (!selected.objectId) {
+            return null
+        }
         const allObjects = [...objects.planets, ...objects.smallBodies]
         const object = allObjects.find(obj => obj.id === selected.objectId)
-        if (!object) return
+        if (!object) {
+            return null
+        }
         return object
     }, [selected.objectId, objects])
 
     useEffect(() => {
-        if (!selectedObject) {
-            moveCamera({x: 0, y: 0, z: 0}, {x: 20, y: 20, z: 20})
-            return
+        if (orbitControlsRef.current) {
+            if (!selectedObject) {
+                moveCamera({x: 0, y: 0, z: 0}, {x: 20, y: 20, z: 20})
+                orbitControlsRef.current.minDistance = 0.1;
+                return
+            }
+            const minDistance = selectedObject.scaleFactor *
+                config.camera.scale * (selectedObject.type === TrajectoryType.Planet ? 3000 : 4000)
+            orbitControlsRef.current.minDistance = minDistance
+            const target = selectedObject.propagateFromTime(timeControls.time)
+            const currentPosition = camera.position.clone()
+            const directionVector = MathUtils.normalize([
+                target[0] - currentPosition.x,
+                target[1] - currentPosition.y,
+                target[2] - currentPosition.z
+            ])
+            const position = directionVector.map((t, i) => target[i] - t * minDistance)
+            moveCamera(
+                {x: target[0], y: target[1], z: target[2]},
+                {x: position[0], y: position[1], z: position[2]}
+            )
         }
-        const target = selectedObject.propagateFromTime(timeControls.time)
-        const position = target.map((t, i) => t + config.camera.offset[i])
-        moveCamera(
-            {x: target[0], y: target[1], z: target[2]},
-            {x: position[0], y: position[1], z: position[2]}
-        )
     }, [selectedObject, moveCamera])
 
     useEffect(() => {
         if (!selectedObject) return
         const target = selectedObject.propagateFromTime(timeControls.time)
-        const timeStepsNumber = (config.timeControls.timeDeltas.length - 1) / 2
-        const prevTarget = selectedObject.propagateFromTime(
-            timeControls.time - config.timeControls.timeDeltas[timeControls.deltaIndex + timeStepsNumber].value * config.camera.tick
-        )
-        const delta = target.map((t, i) => t - prevTarget[i])
+        const delta = target.map((t, i) => t - currentGoal.current[i])
+        currentGoal.current = [...target]
         const prevPosition = camera.position.clone()
         const position = [
             prevPosition.x + delta[0],
@@ -88,10 +105,15 @@ const CameraController: React.FC<CameraControllerProps> = ({
             {x: position[0], y: position[1], z: position[2]},
             true
         )
-    }, [timeControls.time])
+    }, [
+        timeControls.time, selectedObject,
+        orbitControlsRef, camera, moveCamera
+    ])
 
     useFrame(() => {
-        orbitControlsRef.current!.update()
+        if (orbitControlsRef.current) {
+            orbitControlsRef.current.update()
+        }
         tweenGroup.current.update()
     })
 

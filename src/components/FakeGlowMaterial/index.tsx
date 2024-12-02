@@ -7,15 +7,6 @@ import { AdditiveBlending, Color, FrontSide } from "three";
 import type { ColorRepresentation } from "three";
 
 /**
- * @typedef {Object} FakeGlowMaterialProps
- * @property {Number} [falloff=0.1] - Controls the value of the Falloff effect. Ranges from 0.0 to 1.0.
- * @property {Number} [glowInternalRadius=6.0] - Controls the internal glow radius. Ranges from -1.0 to 1.0. Set a darker color to get the fresnel effect only.
- * @property {String} [glowColor='#00ff00'] - Specifies the color of the hologram. Use hexadecimal format.
- * @property {Number} [glowSharpness=1.0] - Specifies the edges sharpness. Defaults to 1.0.
- * @property {Number} [side=THREE.FrontSide] - Specifies side for the material, as THREE.DoubleSide. Options are "THREE.FrontSide", "THREE.BackSide", "THREE.DoubleSide". Defaults to "THREE.FrontSide".
- */
-
-/**
  * FakeGlow material component by Anderson Mancini - Feb 2024.
  * TypeScript version by https://github.com/nirtamir2. Thank you!
  * @param {FakeGlowMaterialProps} props - Props for the FakeGlowMaterial component.
@@ -33,6 +24,8 @@ type Props = {
   glowColor?: ColorRepresentation;
   glowSharpness?: number;
   side?: Side;
+  depthTest?: boolean;
+  depthWrite?: boolean;
 };
 
 export const FakeGlowMaterial = ({
@@ -41,6 +34,8 @@ export const FakeGlowMaterial = ({
   glowColor = "#00ff00",
   glowSharpness = 1,
   side = FrontSide, // Adjust the PropTypes as per your requirements
+  depthTest = true,
+  depthWrite = false,
 }: Props) => {
   const FakeGlowMaterial = useMemo(() => {
     return shaderMaterial(
@@ -49,6 +44,8 @@ export const FakeGlowMaterial = ({
         glowInternalRadius,
         glowColor: new Color(glowColor),
         glowSharpness,
+        depthTest,
+        depthWrite,
       },
       /*GLSL */
       `
@@ -85,7 +82,10 @@ export const FakeGlowMaterial = ({
         gl_FragColor = vec4(clamp(glowColor * fresnel, 0., 1.0), clamp(fakeGlow, 0., 1.0));
       }`,
     );
-  }, [falloff, glowInternalRadius, glowColor, glowSharpness]);
+  }, [
+      falloff, glowInternalRadius, glowColor,
+      glowSharpness, depthTest, depthWrite,
+  ]);
 
   extend({ FakeGlowMaterial });
 
@@ -95,7 +95,6 @@ export const FakeGlowMaterial = ({
       side={side}
       transparent={true}
       blending={AdditiveBlending}
-      depthTest={false}
     />
   );
 };

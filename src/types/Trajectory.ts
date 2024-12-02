@@ -1,6 +1,7 @@
 import { MathUtils } from "../utils";
 import Coords from "./Coords";
-import { MILLISECONDS_IN_SIDEREAL_YEAR } from "../globals/constants";
+import { MILLISECONDS_IN_SIDEREAL_YEAR, SUN_DIAMETER } from "../globals/constants";
+import config from "../globals/config.json";
 
 
 enum TrajectoryType {
@@ -27,10 +28,14 @@ class Trajectory {
     cache: {
         points?: Coords[],
         sLR?: number,
+        scaleFactor?: number,
     }
     kind: string;
     sourceJSON: string;
     description: string;
+    model: string | undefined;
+    obliquity: number;
+    rotationPeriod: number;
 
     constructor(
         id: string,
@@ -43,12 +48,15 @@ class Trajectory {
         mAe: number,
         Sidereal: number,
         diameter: number,
+        obliquity: number,
+        rotationPeriod: number,
         type: TrajectoryType,
         color?: string,
         calculateOrbit: boolean = false,
         kind: string = '',
         sourceJSON: string = '{}',
-        description: string = ''
+        description: string = '',
+        model: string = '',
     ){
         this.id = id
         this.name = name                                        // name the object
@@ -60,6 +68,7 @@ class Trajectory {
         this.period = Sidereal * MILLISECONDS_IN_SIDEREAL_YEAR  // siderial period as a multiple of Earth's orbital period
         this.epochMeanAnomaly = MathUtils.degToRad(mAe)         // mean anomaly at epoch
         this.diameter = isNaN(diameter) ? 0 : diameter
+        this.obliquity = isNaN(obliquity) ? 0 : MathUtils.degToRad(obliquity)
         this.type = type
         this.position = [0,0,0]
         this.color = color ?? (type === TrajectoryType.PHA ? "red" : (type === TrajectoryType.NEO ? "blue" : "grey"))
@@ -71,6 +80,8 @@ class Trajectory {
         this.kind = kind
         this.sourceJSON = sourceJSON
         this.description = description
+        this.model = model ? (model.startsWith('http') ? model : `./models/asteroids/${model}`) : undefined
+        this.rotationPeriod = rotationPeriod
     }
 
     /**
@@ -115,11 +126,40 @@ class Trajectory {
         if (this.cache && this.cache.points) {
             return this.cache.points
         }
-        const _points = new Array(3600).fill(0).map((_, i) => {
-            return this.propagate(MathUtils.degToRad(i / 10));
+        const _points = new Array(36000).fill(0).map((_, i) => {
+            return this.propagate(MathUtils.degToRad(i / 100));
         });
         _points.push(_points[0]);
         return _points;
+    }
+
+    /**
+     * Getter for the trajectory's scale factor.
+     *
+     * @returns {number} The trajectory's scale factor.
+     */
+    get scaleFactor(): number {
+        if (this.cache && this.cache.scaleFactor) {
+            return this.cache.scaleFactor
+        }
+        const ratio = (this.diameter ?? 0) / SUN_DIAMETER;
+        const limitedRatio = Math.max(ratio, config.camera.minDistance);
+        this.cache.scaleFactor = limitedRatio;
+        return limitedRatio;
+    }
+
+    /**
+     * Calculate rotation delta for given time delta
+     * @param timeDelta - Time delta in milliseconds
+     * @returns Rotation delta in degrees
+     */
+    calculateRotation(time: number): Coords {
+        const rotPeriod = this.rotationPeriod * 3600
+        return [
+            this.obliquity,
+            (((time / 1000) % rotPeriod) / rotPeriod) * (Math.PI * 2),
+            0
+        ]
     }
 }
 
@@ -137,7 +177,11 @@ type TrajectoryData = {
     mAe: number,
     sidereal: number,
     d: number,
-    color: string
+    obliquity: number,
+    color: string,
+    description: string,
+    model: string,
+    rotationPeriod: number, // in hours
 }
 
 
@@ -164,11 +208,15 @@ class TrajectoryUtils {
                     object.mAe,
                     object.sidereal,
                     object.d,
+                    object.obliquity,
+                    object.rotationPeriod,
                     type,
                     object.color,
                     calculateOrbit,
                     '',
-                    JSON.stringify(object)
+                    JSON.stringify(object),
+                    object.description,
+                    object.model
                 );
             });
 

@@ -19,12 +19,21 @@ const TimeControls: React.FC = memo(() => {
                         time: new Date(e.target.value).getTime()
                     })
                 }} />
-                <button onClick={() => setTimeControls({
-                    ...timeControls,
-                    time: new Date().getTime(),
-                    live: true,
-                    deltaIndex: 0, deltaTime: 1
-                })} className={`live-button ${timeControls.live ? 'live' : ''}`}>
+                <button onClick={() => {
+                    if (timeControls.live) {
+                        setTimeControls({
+                            ...timeControls,
+                            live: false,
+                            deltaIndex: 0, deltaTime: 0,
+                        })
+                    } else {
+                        setTimeControls({
+                            ...timeControls,
+                            time: new Date().getTime(), live: true,
+                            deltaIndex: 0, deltaTime: 1
+                        })
+                    }
+                }} className={`live-button ${timeControls.live ? 'live' : ''}`}>
                     Live
                 </button>
                 <input type="range"
