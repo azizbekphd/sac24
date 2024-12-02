@@ -12,7 +12,8 @@
             "mAe": 174.796,
             "d": 4879,
             "color": "#B5B5B5",
-            "description": "The smallest planet in our solar system and nearest to the Sun, Mercury is only slightly larger than Earth's Moon. From the surface of Mercury, the Sun would appear more than three times as large as it does when viewed from Earth, and the sunlight would be as much as seven times brighter."
+            "description": "The smallest planet in our solar system and nearest to the Sun, Mercury is only slightly larger than Earth's Moon. From the surface of Mercury, the Sun would appear more than three times as large as it does when viewed from Earth, and the sunlight would be as much as seven times brighter.",
+            "model": "models/planets/mercury.glb"
         },
         {
             "id": "VENUS",
@@ -26,7 +27,8 @@
             "mAe": 50.115,
             "d": 12104,
             "color": "#E6CFCF",
-            "description": "Venus is the second planet from the Sun, and our closest planetary neighbor. It's the hottest planet in our solar system, and is sometimes called Earth's twin."
+            "description": "Venus is the second planet from the Sun, and our closest planetary neighbor. It's the hottest planet in our solar system, and is sometimes called Earth's twin.",
+            "model": "models/planets/venus.glb"
         },
         {
             "id": "EARTH",
@@ -40,7 +42,8 @@
             "mAe": 358.617,
             "d": 12742,
             "color": "#2A9DF4",
-            "description": "Earth – our home planet – is the third planet from the Sun, and the fifth largest planet. It's the only place we know of inhabited by living things."
+            "description": "Earth – our home planet – is the third planet from the Sun, and the fifth largest planet. It's the only place we know of inhabited by living things.",
+            "model": "models/planets/earth.glb"
         },
         {
             "id": "MARS",
@@ -54,7 +57,8 @@
             "mAe": 19.412,
             "d": 6779,
             "color": "#D94F3D",
-            "description": "Mars – the fourth planet from the Sun – is a dusty, cold, desert world with a very thin atmosphere. This dynamic planet has seasons, polar ice caps, extinct volcanoes, canyons and weather."
+            "description": "Mars – the fourth planet from the Sun – is a dusty, cold, desert world with a very thin atmosphere. This dynamic planet has seasons, polar ice caps, extinct volcanoes, canyons and weather.",
+            "model": "models/planets/mars.glb"
         },
         {
             "id": "JUPITER",
@@ -68,7 +72,8 @@
             "mAe": 20.020,
             "d": 139820,
             "color": "#E8C16A",
-            "description": "Jupiter is a world of extremes. It's the largest planet in our solar system – if it were a hollow shell, 1,000 Earths could fit inside. It's also the oldest planet, forming from the dust and gases left over from the Sun's formation 4.6 billion years ago. But it has the shortest day in the solar system, taking only 10.5 hours to spin around once on its axis."
+            "description": "Jupiter is a world of extremes. It's the largest planet in our solar system – if it were a hollow shell, 1,000 Earths could fit inside. It's also the oldest planet, forming from the dust and gases left over from the Sun's formation 4.6 billion years ago. But it has the shortest day in the solar system, taking only 10.5 hours to spin around once on its axis.",
+            "model": "models/planets/jupiter.glb"
         },
         {
             "id": "SATURN",
@@ -82,7 +87,8 @@
             "mAe": 317.020,
             "d": 116460,
             "color": "#D2B77A",
-            "description": "Saturn is the sixth planet from the Sun, and the second-largest planet in our solar system."
+            "description": "Saturn is the sixth planet from the Sun, and the second-largest planet in our solar system.",
+            "model": "models/planets/saturn.glb"
         },
         {
             "id": "URANUS",
@@ -96,7 +102,8 @@
             "mAe": 142.238600,
             "d": 50724,
             "color": "#A7C6E7",
-            "description": "Uranus is the seventh planet from the Sun, and it has the third largest diameter of planets in our solar system. Uranus appears to spin sideways."
+            "description": "Uranus is the seventh planet from the Sun, and it has the third largest diameter of planets in our solar system. Uranus appears to spin sideways.",
+            "model": "models/planets/uranus.glb"
         },
         {
             "id": "NEPTUNE",
@@ -110,7 +117,8 @@
             "mAe": 259.883,
             "d": 49224,
             "color": "#4A90E2",
-            "description": "Neptune is the eighth and most distant planet in our solar system."
+            "description": "Neptune is the eighth and most distant planet in our solar system.",
+            "model": "models/planets/neptune.glb"
         }
     ]
 }
