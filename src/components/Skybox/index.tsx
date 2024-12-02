@@ -4,13 +4,13 @@ import { useEffect } from "react";
 
 const Skybox = () => {
     const skyboxTextures = [
-        "right",
-        "left",
-        "top",
-        "bottom",
-        "front",
-        "back",
-    ].map((t) => `/sac24/skybox/${t}.png`);
+        "px",
+        "nx",
+        "py",
+        "ny",
+        "pz",
+        "nz",
+    ].map((t) => `/sac24/skybox/${t}.jpg`);
     const [cubeMapTexture] = useLoader<any, any, any>(THREE.CubeTextureLoader, [skyboxTextures]);
     const { scene } = useThree();
 

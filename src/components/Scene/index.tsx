@@ -88,7 +88,6 @@ function Scene() {
                 <XR store={xrStore}>
                     <ambientLight intensity={0.05} />
                     <pointLight position={[0, 0, 0]} decay={0} intensity={Math.PI} />
-                    <Sun />
                     {objects.planets.map(
                         (obj, i) => <Orbit
                             key={i.toString()}
@@ -103,6 +102,7 @@ function Scene() {
                         <OrbitControls ref={orbitControlsRef} enablePan={false} maxDistance={400} camera={camera} zoomSpeed={2} />
                     </IfInSessionMode>
                     <CameraController camera={camera} orbitControlsRef={orbitControlsRef} />
+                    <Sun />
                     {objects.planets ? <Skybox /> : <></>}
                 </XR>
             </Canvas>
