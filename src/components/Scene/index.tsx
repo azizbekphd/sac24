@@ -1,14 +1,15 @@
 import "./index.css"
 import { Canvas, extend } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
-import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { IfInSessionMode, XR } from "@react-three/xr";
 import { TrajectoriesContext, XRContext, TimeControlsContext, TrajectoriesContextType, FocusContext } from "../../contexts";
 import { PerspectiveCamera } from "three";
 import Orbit from "../Orbit";
-import { CameraController, Skybox, SmallBodies, Sun } from "..";
+import { CameraController, SmallBodies, Sun } from "..";
 import config from "../../globals/config.json";
 
+const Skybox = lazy(() => import("../Skybox/index.tsx"))
 
 enum ViewMode {
     normal,
@@ -102,8 +103,10 @@ function Scene() {
                         <OrbitControls ref={orbitControlsRef} enablePan={false} maxDistance={400} camera={camera} zoomSpeed={2} />
                     </IfInSessionMode>
                     <CameraController camera={camera} orbitControlsRef={orbitControlsRef} />
-                    <Sun />
-                    {objects.planets ? <Skybox /> : <></>}
+                    <Suspense fallback={null}>
+                        <Sun />
+                        <Skybox />
+                    </Suspense>
                 </XR>
             </Canvas>
             {/*<button onClick={() => {xrStore.enterVR()}} className="enter-vr">Enter VR</button>*/}
