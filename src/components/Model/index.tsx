@@ -1,12 +1,11 @@
 import * as THREE from "three";
 import { dispose, useLoader } from "@react-three/fiber";
-import { Suspense, useContext, useEffect, useLayoutEffect, useMemo, useRef } from "react";
+import { Suspense, useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { SUN_MODEL_HEIGHT } from "../../globals/constants";
 import config from "../../globals/config.json";
 import { Coords } from "../../types";
-import { TimeControlsContext } from "../../contexts";
 
 
 const extensionLoaderMap = {
@@ -15,7 +14,7 @@ const extensionLoaderMap = {
 };
 
 type ModelProps = {
-    source: string;
+    source?: string;
     position: THREE.Vector3;
     scale?: number;
     color?: string | null;
@@ -23,6 +22,9 @@ type ModelProps = {
 };
 
 const UnwrappedModel = ({ source, position, scale = 1, color, rotation = [0, 0, 0] }: ModelProps) => {
+    if (!source) {
+        return null
+    }
     const modelRef = useRef<THREE.Group>(null!);
 
     const extension = useMemo(() => {
