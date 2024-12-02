@@ -45,6 +45,7 @@ const Orbit: React.FC<OrbitProps> = memo(({ trajectory, timestamp }) =>{
                 source={trajectory.model}
                 position={new THREE.Vector3(...position)}
                 scale={trajectory.scaleFactor}
+                rotation={trajectory.calculateRotation(timeControls.time)}
             />
         }
 

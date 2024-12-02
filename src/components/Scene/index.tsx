@@ -86,7 +86,7 @@ function Scene() {
                 onPointerDown={onPointerDown}
                 frameloop="demand">
                 <XR store={xrStore}>
-                    <ambientLight intensity={0.01} />
+                    <ambientLight intensity={0.05} />
                     <pointLight position={[0, 0, 0]} decay={0} intensity={Math.PI} />
                     <Sun />
                     {objects.planets.map(
@@ -100,7 +100,7 @@ function Scene() {
                         trajectories={chunk}
                         timestamp={timeControls.time} />)}
                     <IfInSessionMode deny={['immersive-ar', 'immersive-vr']} >
-                        <OrbitControls ref={orbitControlsRef}  enablePan={false} maxDistance={400} camera={camera} />
+                        <OrbitControls ref={orbitControlsRef} enablePan={false} maxDistance={400} camera={camera} zoomSpeed={2} />
                     </IfInSessionMode>
                     <CameraController camera={camera} orbitControlsRef={orbitControlsRef} />
                     {objects.planets ? <Skybox /> : <></>}

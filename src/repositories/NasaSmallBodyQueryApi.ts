@@ -20,6 +20,7 @@ class SmallBody {
     om: string;      // aN
     per_y: string;   // sidereal
     diameter: string;
+    rot_per: string;
     kind: string;
     sourceJSON: string;
     model: string;
@@ -39,9 +40,10 @@ class SmallBody {
         this.om = args[10];
         this.per_y = args[11];
         this.diameter = args[12];
-        this.kind = args[13];
-        this.model = args[14];
-        this.sourceJSON = JSON.stringify(args[15])
+        this.rot_per = args[13];
+        this.kind = args[14];
+        this.model = args[15];
+        this.sourceJSON = JSON.stringify(args[16])
     }
 
     static fromObject(obj: any): SmallBody {
@@ -49,7 +51,7 @@ class SmallBody {
             null, null,
             obj.spkid, obj.name, obj.full_name, obj.neo, obj.pha,
             obj.e, obj.w, obj.a, obj.ma, obj.i, obj.om,
-            obj.per_y, obj.diameter, obj.kind, obj.model, obj
+            obj.per_y, obj.diameter, obj.rot_per, obj.kind, obj.model, obj
         ])
     }
 
@@ -71,6 +73,8 @@ class SmallBody {
             parseFloat(this.ma),
             parseFloat(this.per_y),
             parseFloat(this.diameter),
+            0,
+            parseFloat(this.rot_per),
             _type,
             this.kind.startsWith('c') ? 'lightblue' : 'grey',
             false,

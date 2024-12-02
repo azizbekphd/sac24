@@ -4,7 +4,7 @@ import { Trajectory } from '../../types'
 import config from '../../globals/config.json'
 import { ThreeEvent, useFrame, useThree } from '@react-three/fiber';
 import { TrajectoryType } from '../../types/Trajectory';
-import { FocusContext } from '../../contexts';
+import { FocusContext, TimeControlsContext } from '../../contexts';
 import { Html, Line } from '@react-three/drei';
 import './index.css'
 import Model from '../Model';
@@ -29,6 +29,7 @@ const SmallBodies: React.FC<SmallBodyOrbits> = memo(({ trajectories, timestamp }
         })
     }, [trajectories])
     const { camera } = useThree()
+    const { timeControls } = useContext(TimeControlsContext)
 
     const calculateColors = useCallback(() => {
         const colors = new Float32Array(drawableTrajectories.map(t => {
@@ -93,16 +94,18 @@ const SmallBodies: React.FC<SmallBodyOrbits> = memo(({ trajectories, timestamp }
         }
         const color = `#${new THREE.Color(...colors.slice(index * 3, index * 3 + 3).map(c => c * 255)).getHexString()}`
         const position = positions.slice(index * 3, index * 3 + 3)
+        const rotation = trajectory.calculateRotation(timeControls.time)
         return {
             name: trajectory.name,
             points: trajectory.points,
+            model: trajectory.model,
+            diameter: trajectory.diameter,
+            scaleFactor: trajectory.scaleFactor,
             position,
             color,
-            model: trajectory.model ? `./models/asteroids/${trajectory.model}` : undefined,
-            diameter: trajectory.diameter,
-            scaleFactor: trajectory.scaleFactor
+            rotation,
         }
-    }, [drawableTrajectories, colors, positions])
+    }, [drawableTrajectories, colors, positions, timeControls.time])
 
     const hoveredParams = useMemo(() => {
         return getParamsById(hovered.objectId)
@@ -142,7 +145,7 @@ const SmallBodies: React.FC<SmallBodyOrbits> = memo(({ trajectories, timestamp }
         const index = intersections[0].index!
         if (index === -1 || !drawableTrajectories[index]) return false
         hovered.setObjectId(drawableTrajectories[index].id)
-    }, [drawableTrajectories, hovered, selectedParams])
+    }, [drawableTrajectories, hovered])
 
     const handlePointerOut = useCallback((e: ThreeEvent<PointerEvent>) => {
         e.stopPropagation()
@@ -273,6 +276,7 @@ const SmallBodies: React.FC<SmallBodyOrbits> = memo(({ trajectories, timestamp }
                 position={new THREE.Vector3(...selectedParams.position)}
                 color={selectedParams.model ? 'grey' : null}
                 scale={selectedParams.scaleFactor}
+                rotation={selectedParams.rotation}
             />
         }
     </>

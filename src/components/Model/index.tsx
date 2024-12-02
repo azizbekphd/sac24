@@ -1,10 +1,12 @@
 import * as THREE from "three";
 import { dispose, useLoader } from "@react-three/fiber";
-import { Suspense, useEffect, useLayoutEffect, useMemo, useRef } from "react";
+import { Suspense, useContext, useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { SUN_MODEL_HEIGHT } from "../../globals/constants";
 import config from "../../globals/config.json";
+import { Coords } from "../../types";
+import { TimeControlsContext } from "../../contexts";
 
 
 const extensionLoaderMap = {
@@ -17,9 +19,10 @@ type ModelProps = {
     position: THREE.Vector3;
     scale?: number;
     color?: string | null;
+    rotation?: Coords;
 };
 
-const UnwrappedModel = ({ source, position, scale = 1, color }: ModelProps) => {
+const UnwrappedModel = ({ source, position, scale = 1, color, rotation = [0, 0, 0] }: ModelProps) => {
     const modelRef = useRef<THREE.Group>(null!);
 
     const extension = useMemo(() => {
@@ -64,6 +67,12 @@ const UnwrappedModel = ({ source, position, scale = 1, color }: ModelProps) => {
         const _scale = scale * config.camera.scale;
         return _scale * modelSizeCompensationFactor!;
     }, [scale, modelSizeCompensationFactor]);
+
+    useEffect(() => {
+        if (modelRef.current) {
+            modelRef.current.rotation.set(...rotation);
+        }
+    }, [rotation]);
 
     useEffect(() => {
         if (modelRef.current) {
