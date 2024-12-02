@@ -4,7 +4,6 @@ import { useContext, useRef } from 'react';
 import { FakeGlowMaterial } from '../FakeGlowMaterial';
 import { FocusContext } from '../../contexts';
 import Model from '../Model';
-import config from '../../globals/config.json';
 
 
 function ConstantSizeSphere() {

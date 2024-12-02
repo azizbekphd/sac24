@@ -36,7 +36,7 @@ const UnwrappedModel = ({ source, position, scale = 1, color }: ModelProps) => {
         return _Loader;
     }, [extension]);
 
-    const loader = useLoader(Loader, source);
+    const loader = useLoader<any, any, any>(Loader, source);
 
     const model = useMemo(() => {
         if (loader.scene) {

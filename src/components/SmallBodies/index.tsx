@@ -126,13 +126,13 @@ const SmallBodies: React.FC<SmallBodyOrbits> = memo(({ trajectories, timestamp }
         }
     })
 
-    const handlePointerMove = useCallback((e: ThreeEvent<PointerEvent>) => {
+    const handlePointerMove = useCallback((e: ThreeEvent<PointerEvent> | any) => {
         const intersections = (e.intersections ?? [e.intersection] ?? [])
-            .filter(i => {
+            .filter((i: THREE.Intersection) => {
                 const ratio = i.distance / i.distanceToRay!
                 return ratio > 100
             })
-            .sort((a, b) => a.distanceToRay! - b.distanceToRay!)
+            .sort((a: THREE.Intersection, b: THREE.Intersection) => a.distanceToRay! - b.distanceToRay!)
         if (intersections.length === 0) {
             if (drawableTrajectories.find(t => t.id === hovered.objectId)) {
                 hovered.setObjectId(null)
@@ -149,14 +149,14 @@ const SmallBodies: React.FC<SmallBodyOrbits> = memo(({ trajectories, timestamp }
         hovered.setObjectId(null)
     }, [hovered])
 
-    const handleClick = useCallback((e: ThreeEvent<PointerEvent>) => {
+    const handleClick = useCallback((e: ThreeEvent<PointerEvent> | any) => {
         e.stopPropagation()
         if (hovered.objectId) {
             selected.setObjectId(hovered.objectId)
             return
         }
         const index = (e.intersections ?? [e.intersection] ?? [])
-            .sort((a, b) => a.distanceToRay! - b.distanceToRay!)[0].index!
+            .sort((a: THREE.Intersection, b: THREE.Intersection) => a.distanceToRay! - b.distanceToRay!)[0].index!
         if (index === -1) return false
         selected.setObjectId(drawableTrajectories[index].id)
     }, [drawableTrajectories, hovered.objectId, selected])

@@ -118,7 +118,7 @@
         "phaColor": [1, 0, 0],
         "cometColor": [0, 0.7890625, 0.92578125],
         "asteroidColor": [0.5859375, 0.5859375, 0.5859375],
-        "defaultModel": "./models/asteroid.obj"
+        "defaultModel": "./models/asteroid.glb"
     },
     "supabase": {
         "url": "https://krywglbrlhpjlqwmupon.supabase.co",
