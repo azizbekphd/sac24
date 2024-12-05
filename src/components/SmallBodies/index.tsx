@@ -30,6 +30,7 @@ const SmallBodies: React.FC<SmallBodyOrbits> = memo(({ trajectories, timestamp }
     }, [trajectories])
     const { camera } = useThree()
     const { timeControls } = useContext(TimeControlsContext)
+    const clickCoords = useRef<{x: number, y: number}>(null!)
 
     const calculateColors = useCallback(() => {
         const colors = new Float32Array(drawableTrajectories.map(t => {
@@ -152,23 +153,31 @@ const SmallBodies: React.FC<SmallBodyOrbits> = memo(({ trajectories, timestamp }
         hovered.setObjectId(null)
     }, [hovered])
 
-    const handleClick = useCallback((e: ThreeEvent<PointerEvent> | any) => {
+    const handlePointerDown = useCallback((e: ThreeEvent<PointerEvent> | any) => {
         e.stopPropagation()
-        if (hovered.objectId) {
-            selected.setObjectId(hovered.objectId)
-            return
+        clickCoords.current = {x: e.clientX, y: e.clientY}
+    }, [])
+
+    const handlePointerUp = useCallback((e: ThreeEvent<PointerEvent> | any) => {
+        e.stopPropagation()
+        if (clickCoords.current.x === e.clientX && clickCoords.current.y === e.clientY) {
+            if (hovered.objectId) {
+                selected.setObjectId(hovered.objectId)
+                return
+            }
+            const index = (e.intersections ?? [e.intersection] ?? [])
+                .sort((a: THREE.Intersection, b: THREE.Intersection) => a.distanceToRay! - b.distanceToRay!)[0].index!
+            if (index === -1) return false
+            selected.setObjectId(drawableTrajectories[index].id)
         }
-        const index = (e.intersections ?? [e.intersection] ?? [])
-            .sort((a: THREE.Intersection, b: THREE.Intersection) => a.distanceToRay! - b.distanceToRay!)[0].index!
-        if (index === -1) return false
-        selected.setObjectId(drawableTrajectories[index].id)
     }, [drawableTrajectories, hovered.objectId, selected])
 
     return <>
         <points
             onPointerMove={handlePointerMove}
             onPointerOut={handlePointerOut}
-            onPointerDown={handleClick}
+            onPointerDown={handlePointerDown}
+            onPointerUp={handlePointerUp}
         >
             <bufferGeometry>
                 <bufferAttribute
