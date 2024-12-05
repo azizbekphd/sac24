@@ -1,12 +1,12 @@
 import "./index.css"
 import { Canvas, extend } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
-import { lazy, Suspense, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { IfInSessionMode, XR } from "@react-three/xr";
-import { TrajectoriesContext, XRContext, TimeControlsContext, TrajectoriesContextType, FocusContext } from "../../contexts";
+import { TrajectoriesContext, XRContext, TimeControlsContext, TrajectoriesContextType } from "../../contexts";
 import { PerspectiveCamera } from "three";
 import Orbit from "../Orbit";
-import { CameraController, SmallBodies, Sun } from "..";
+import { CameraController, SmallBodies, Sun, VrButton } from "..";
 import config from "../../globals/config.json";
 
 const Skybox = lazy(() => import("../Skybox/index.tsx"))
@@ -28,7 +28,6 @@ function Scene() {
     const [mode, setMode] = useState<ViewMode>(ViewMode.normal);
     const [camera, setCamera] = useState<PerspectiveCamera>(normalCamera);
     const orbitControlsRef = useRef(null!);
-    const { hovered, selected } = useContext(FocusContext);
 
     useEffect(() => {
         xrStore.subscribe((state, prevState) => {
@@ -59,6 +58,7 @@ function Scene() {
     }, [mode])
 
     useEffect(() => {
+        camera.fov = 50;
         camera.position.set(20, 20, 20);
         camera.lookAt(0, 0, 0);
         camera.updateProjectionMatrix();
@@ -72,19 +72,12 @@ function Scene() {
         return chunks
     }, [objects.smallBodies])
 
-    const onPointerDown = useCallback(() => {
-        if (hovered.objectId) {
-            selected.setObjectId(hovered.objectId)
-        }
-    }, [hovered.objectId, selected])
-
     return (
         <>
             <Canvas
                 style={{position: 'fixed', top: 0, left: 0}}
                 camera={camera}
                 dpr={window.devicePixelRatio}
-                onPointerDown={onPointerDown}
                 frameloop="demand">
                 <XR store={xrStore}>
                     <ambientLight intensity={0.05} />
@@ -109,7 +102,7 @@ function Scene() {
                     </Suspense>
                 </XR>
             </Canvas>
-            {/*<button onClick={() => {xrStore.enterVR()}} className="enter-vr">Enter VR</button>*/}
+            <VrButton store={xrStore} />
         </>
     );
 }

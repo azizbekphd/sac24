@@ -3,15 +3,6 @@
     height: 100%;
 }
 
-.enter-vr {
-    width: 100px;
-    height: 50px;
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    bottom: 0px;
-}
-
 .trajectory-label {
     transition-duration: 0.2s;
     font-size: 12px;
@@ -32,4 +23,8 @@
 
 .trajectory-label.hide {
     opacity: 0;
+}
+
+canvas {
+    background-color: black;
 }

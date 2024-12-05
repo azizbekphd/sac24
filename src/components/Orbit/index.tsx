@@ -1,8 +1,8 @@
 import * as THREE from 'three'
-import React, { memo, useContext, useEffect, useMemo, useRef } from 'react'
+import React, { memo, useCallback, useContext, useEffect, useMemo, useRef } from 'react'
 import { Trajectory } from '../../types'
 import { Html, Line } from '@react-three/drei';
-import { useThree } from '@react-three/fiber';
+import { ThreeEvent, useThree } from '@react-three/fiber';
 import { FocusContext, TimeControlsContext } from '../../contexts';
 import Model from '../Model';
 
@@ -17,6 +17,7 @@ const Orbit: React.FC<OrbitProps> = memo(({ trajectory, timestamp }) =>{
     const { camera } = useThree()
     const { hovered, selected } = useContext(FocusContext);
     const { timeControls } = useContext(TimeControlsContext)
+    const clickCoords = useRef<{x: number, y: number}>(null!)
 
     const position = useMemo(() => {
         return trajectory.propagateFromTime(timestamp)
@@ -24,12 +25,20 @@ const Orbit: React.FC<OrbitProps> = memo(({ trajectory, timestamp }) =>{
 
     useEffect(() => {
         const distance = constantSizeRef.current.position.distanceTo(camera.position);
-        const scaleFactor = distance * 0.01;
         constantSizeRef.current.position.set(position[0], position[1], position[2])
+
+        const mm = 100;
+        const canvasHeight = window.innerHeight;
+        const mmToMeters = mm / 1000;
+        const fovInRadians = ((camera as THREE.PerspectiveCamera).fov * Math.PI) / 180;
+        const visibleHeight = 2 * Math.tan(fovInRadians / 2) * distance;
+        const pixelHeightInWorldUnits = visibleHeight / canvasHeight;
+        const worldUnits = mmToMeters / pixelHeightInWorldUnits;
+        const scaleFactor = 1 / worldUnits;
+
         constantSizeRef.current.scale.set(scaleFactor, scaleFactor, scaleFactor);
     }, [
-        camera.position, camera.scale, camera.zoom,
-        position, timeControls.deltaTime,
+        camera, position, timeControls.deltaTime,
         trajectory.id, selected.objectId
     ])
 
@@ -37,6 +46,26 @@ const Orbit: React.FC<OrbitProps> = memo(({ trajectory, timestamp }) =>{
         return hovered.objectId === trajectory.id ||
             selected.objectId === trajectory.id
     }, [trajectory, hovered.objectId, selected.objectId])
+
+    const handlePointerDown = useCallback((e: ThreeEvent<PointerEvent> | any) => {
+        e.stopPropagation()
+        clickCoords.current = {x: e.clientX, y: e.clientY}
+    }, [])
+
+    const handlePointerUp = useCallback((e: ThreeEvent<PointerEvent> | any) => {
+        e.stopPropagation()
+        if (Math.sqrt((clickCoords.current.x - e.clientX) ^ 2 + (clickCoords.current.y - e.clientY) ^ 2) < 10) {
+            if (hovered.objectId) {
+                selected.setObjectId(hovered.objectId)
+                return
+            }
+            const index = (e.intersections ?? [e.intersection] ?? [])
+                .sort((a: THREE.Intersection, b: THREE.Intersection) => a.distanceToRay! - b.distanceToRay!)[0].index!
+            if (index === -1) return false
+            selected.setObjectId(trajectory.id)
+        }
+    }, [trajectory.id, hovered.objectId, selected])
+
 
     return <>
         {/* planet model */}
@@ -57,21 +86,18 @@ const Orbit: React.FC<OrbitProps> = memo(({ trajectory, timestamp }) =>{
                 hovered.setObjectId(trajectory.id)
             }}
             onPointerOut={() => hovered.setObjectId(null)}
-            onPointerDown={() => selected.setObjectId(trajectory.id)}
+            onPointerDown={handlePointerDown}
+            onPointerUp={handlePointerUp}
         >
             <Html
-                onPointerMove={(e) => {
-                    e.stopPropagation()
+                onPointerMove={() => {
                     hovered.setObjectId(trajectory.id)
                 }}
-                onPointerOut={(e) => {
-                    e.stopPropagation()
+                onPointerOut={() => {
                     hovered.setObjectId(null)
                 }}
-                onClick={(e) => {
-                    e.stopPropagation()
-                    hovered.setObjectId(trajectory.id)
-                }}
+                onPointerDown={handlePointerDown}
+                onPointerUp={handlePointerUp}
                 className={[
                     'trajectory-label',
                     highlight ? 'highlight' : '',
