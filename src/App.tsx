@@ -9,6 +9,7 @@ import TimeControlsContext, { type TimeControlsState } from './contexts/TimeCont
 import { useInterval } from './hooks'
 import config from './globals/config.json'
 import { nasaApi } from './globals/instances'
+import ForceLandscape from './components/ForceLandscape'
 
 
 const xrStore = createXRStore();
@@ -94,9 +95,11 @@ function App() {
             },},
             { context: XRContext, value: memoizedXrStore }
         ]}>
-            <Scene />
-            <SideMenu />
-            <TimeControls />
+            <ForceLandscape>
+                <Scene />
+                <SideMenu />
+                <TimeControls />
+            </ForceLandscape>
         </MultipleContextProvider>
     </>)
 }

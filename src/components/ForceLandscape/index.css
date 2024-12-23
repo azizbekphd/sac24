@@ -1,0 +1,53 @@
+@media screen and (orientation: portrait) {
+    .landscape-content {
+        display: none;
+    }
+    .landscape-hint {
+        display: initial;
+    }
+}
+
+@media screen and (orientation: landscape) {
+    .landscape-content {
+        display: initial;
+    }
+    .landscape-hint {
+        display: none;
+    }
+}
+
+/* always hide landscape hint on non-mobile devices */
+@media screen and (min-width: 768px) {
+    .landscape-hint {
+        display: none!important;
+    }
+}
+
+.landscape-hint {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    padding: 40px;
+}
+
+.landscape-hint img {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 20px;
+}
+
+.landscape-hint p {
+    font-size: 20px;
+    color: white;
+    text-align: center;
+}
+
+.landscape-content {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
