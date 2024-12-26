@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import './App.css'
-import { Scene, SideMenu, TimeControls } from './components'
+import { Loading, Scene, SideMenu, TimeControls } from './components'
 import { MultipleContextProvider } from './utils'
 import { FiltersContextType, FocusContext, TrajectoriesContext, TrajectoriesContextType, XRContext, Filters, FiltersContext } from './contexts'
 import { createXRStore } from '@react-three/xr'
@@ -29,6 +29,7 @@ function App() {
     })
     const [selected, setSelected] = useState<string | null>(config.focus.default.selected.objectId)
     const [hovered, setHovered] = useState<string | null>(config.focus.default.hovered.objectId)
+    const [loading, setLoading] = useState<boolean>(false)
 
     useEffect(() => {
         if (trajectories.planets.length === 0) {
@@ -45,11 +46,13 @@ function App() {
 
     useEffect(() => {
         if (trajectories.planets.length > 0) {
+            setLoading(true)
             nasaApi.getSmallBodies(filters.filters).then(smallBodies => {
                 setTrajectories({
                     ...trajectories,
                     smallBodies: [...smallBodies]
                 })
+                setLoading(false)
             })
         } else {
             setFilters({...filters})
@@ -93,12 +96,13 @@ function App() {
                 },
                 center: [0, 0, 0]
             },},
-            { context: XRContext, value: memoizedXrStore }
+            { context: XRContext, value: memoizedXrStore },
         ]}>
             <ForceLandscape>
                 <Scene />
                 <SideMenu />
                 <TimeControls />
+                <Loading show={loading} fullScreen/>
             </ForceLandscape>
         </MultipleContextProvider>
     </>)
