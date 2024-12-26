@@ -3,6 +3,7 @@ import TrajectoriesContext, { type TrajectoriesContextType } from './Trajectorie
 import FocusContext, { type FocusContextType } from './FocusContext';
 import TimeControlsContext, { type TimeControlsState } from './TimeControllerContext';
 import FiltersContext, { Filters, type FiltersContextType } from './FiltersContext';
+import LoadingContext, { type LoadingContextType } from './LoadingContext';
 
 export {
     XRContext,
@@ -14,4 +15,6 @@ export {
     type TimeControlsState,
     FiltersContext, Filters,
     type FiltersContextType,
+    LoadingContext,
+    type LoadingContextType,
 };

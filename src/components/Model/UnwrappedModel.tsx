@@ -14,7 +14,7 @@ const extensionLoaderMap = {
 };
 
 type ModelProps = {
-    source?: string;
+    source: string;
     position: THREE.Vector3;
     scale?: number;
     color?: string | null;
@@ -22,9 +22,6 @@ type ModelProps = {
 };
 
 const UnwrappedModel = ({ source, position, scale = 1, color, rotation = [0, 0, 0] }: ModelProps) => {
-    if (!source) {
-        return null
-    }
     const modelRef = useRef<THREE.Group>(null!);
 
     const extension = useMemo(() => {

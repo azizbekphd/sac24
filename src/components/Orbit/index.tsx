@@ -69,7 +69,7 @@ const Orbit: React.FC<OrbitProps> = memo(({ trajectory, timestamp }) =>{
 
     return <>
         {/* planet model */}
-        {selected.objectId === trajectory.id &&
+        {(selected.objectId === trajectory.id) && trajectory.model &&
             <Model
                 source={trajectory.model}
                 position={new THREE.Vector3(...position)}

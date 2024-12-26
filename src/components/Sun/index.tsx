@@ -41,6 +41,7 @@ function Sun() {
                 source="models/sun.glb"
                 position={new THREE.Vector3(0, 0, 0)}
                 scale={1}
+                loadingFallback={false}
             />
         </>
     );
