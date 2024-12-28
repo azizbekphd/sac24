@@ -154,12 +154,10 @@ const SmallBodies: React.FC<SmallBodyOrbits> = memo(({ trajectories, timestamp }
     }, [hovered])
 
     const handlePointerDown = useCallback((e: ThreeEvent<PointerEvent> | any) => {
-        e.stopPropagation()
         clickCoords.current = {x: e.clientX, y: e.clientY}
     }, [])
 
     const handlePointerUp = useCallback((e: ThreeEvent<PointerEvent> | any) => {
-        e.stopPropagation()
         if (clickCoords.current.x === e.clientX && clickCoords.current.y === e.clientY) {
             if (hovered.objectId) {
                 selected.setObjectId(hovered.objectId)
