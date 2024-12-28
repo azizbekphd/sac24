@@ -1,0 +1,1 @@
+import{u as o,a as u,r as x,j as r,C as n}from"./index-94dc1d77.js";const p=()=>{const t=["px","nx","py","ny","pz","nz"].map(a=>`/sac24/skybox/${a}.jpg`),[e]=o(n,[t]),{scene:s}=u();return x.useEffect(()=>{s.background=e},[e,s]),r.jsx(r.Fragment,{})};export{p as default};
