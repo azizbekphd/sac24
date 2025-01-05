@@ -119,7 +119,7 @@ class NasaSmallBodyQueryApi {
             .order(filters.order, {ascending: filters.ascending, nullsFirst: false})
             .range(
                 (filters.page - 1) * filters.pageSize,
-                filters.page * filters.pageSize)
+                filters.page * filters.pageSize - 1)
         if (error) {
             console.log(error)
             if (attempt < 5) {
